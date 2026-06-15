@@ -235,8 +235,16 @@ function renderPalpites() {
   const palpites   = getPalpites();
   const resultados = getResultados();
 
+  const hoje = new Date().toISOString().slice(0, 10);
+  const jogosPendentes = COPA_DATA.jogos.filter(j => j.data >= hoje);
+
+  if (jogosPendentes.length === 0) {
+    container.innerHTML = `<p class="aviso">Todos os jogos da fase de grupos já aconteceram!</p>`;
+    return;
+  }
+
   const porData = {};
-  COPA_DATA.jogos.forEach(j => {
+  jogosPendentes.forEach(j => {
     if (!porData[j.data]) porData[j.data] = [];
     porData[j.data].push(j);
   });
