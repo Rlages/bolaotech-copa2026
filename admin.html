@@ -8,30 +8,92 @@
 </head>
 <body>
 
-  <nav>
-    <a href="index.html" class="nav-logo">⚽ BolãoTech</a>
-    <ul class="nav-links">
-      <li><a href="index.html">Início</a></li>
-      <li><a href="palpites.html">Palpites</a></li>
-      <li><a href="placar.html">Placar</a></li>
-      <li><a href="admin.html" class="ativo">Admin</a></li>
-    </ul>
-  </nav>
-
-  <div class="hero hero-compact">
-    <h1>Registrar Resultados</h1>
-    <p>Insira o placar real dos jogos para calcular a pontuação dos participantes.</p>
+  <!-- ── Tela de senha ─────────────────────────────────────────────── -->
+  <div id="admin-gate">
+    <div class="gate-box">
+      <div class="gate-icon">🔒</div>
+      <h2 class="gate-titulo">Área Restrita</h2>
+      <p class="gate-desc">Apenas o administrador pode registrar resultados.</p>
+      <div class="gate-input-group">
+        <input type="password" id="gate-senha" class="input-text"
+               placeholder="Senha..."
+               onkeydown="if(event.key==='Enter') verificarSenha()">
+        <button class="btn" onclick="verificarSenha()">Entrar</button>
+      </div>
+      <p id="gate-erro" class="gate-erro">Senha incorreta. Tente novamente.</p>
+    </div>
   </div>
 
-  <main class="section">
-    <div id="admin-container"></div>
-  </main>
+  <!-- ── Conteúdo admin (oculto até autenticar) ────────────────────── -->
+  <div id="admin-main" style="display:none">
 
-  <footer>
-    BolãoTech Copa 2026 &copy; 2026
-  </footer>
+    <nav>
+      <a href="index.html" class="nav-logo">⚽ BolãoTech</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Início</a></li>
+        <li><a href="palpites.html">Palpites</a></li>
+        <li><a href="placar.html">Placar</a></li>
+        <li><a href="admin.html" class="ativo">Admin</a></li>
+      </ul>
+    </nav>
+
+    <div class="hero hero-compact">
+      <h1>Registrar Resultados</h1>
+      <p>Insira o placar real dos jogos para calcular a pontuação dos participantes.</p>
+    </div>
+
+    <main class="section">
+      <div style="display:flex; justify-content:flex-end; margin-bottom:1rem;">
+        <button class="btn-sair-admin" onclick="sairAdmin()">Sair</button>
+      </div>
+      <div id="admin-container"></div>
+    </main>
+
+    <footer>
+      BolãoTech Copa 2026 &copy; 2026
+    </footer>
+
+  </div>
 
   <script src="js/data.js"></script>
   <script src="js/app.js"></script>
+  <script>
+    const ADMIN_HASH = "b92e9172da82616564bd6b24228bc2241c78a4e18ef967a9b4b3691bc00040ce";
+
+    async function sha256(str) {
+      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    async function verificarSenha() {
+      const input = document.getElementById("gate-senha").value;
+      const hash  = await sha256(input);
+      if (hash === ADMIN_HASH) {
+        sessionStorage.setItem("bolao_admin", "1");
+        mostrarAdmin();
+      } else {
+        document.getElementById("gate-erro").style.display = "block";
+        document.getElementById("gate-senha").value = "";
+        document.getElementById("gate-senha").focus();
+      }
+    }
+
+    function mostrarAdmin() {
+      document.getElementById("admin-gate").style.display = "none";
+      document.getElementById("admin-main").style.display = "block";
+      renderAdmin();
+    }
+
+    function sairAdmin() {
+      sessionStorage.removeItem("bolao_admin");
+      location.reload();
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      if (sessionStorage.getItem("bolao_admin") === "1") {
+        mostrarAdmin();
+      }
+    });
+  </script>
 </body>
 </html>
