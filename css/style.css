@@ -288,7 +288,32 @@ nav {
   font-weight: 700;
   font-size: .9rem;
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .3rem;
   text-align: center;
+}
+
+.time-mandante,
+.time-visitante { align-items: center; }
+
+.time-mini {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  font-weight: 700;
+  font-size: .9rem;
+}
+
+.escudo {
+  width: 40px;
+  height: 28px;
+  object-fit: cover;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.25);
+  display: block;
+  flex-shrink: 0;
 }
 
 .placar-inputs {

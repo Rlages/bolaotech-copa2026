@@ -1,3 +1,62 @@
+// ── Flag images ───────────────────────────────────────────────────
+const FLAG_CODES = {
+  "México":            "mx",
+  "África do Sul":     "za",
+  "Coreia do Sul":     "kr",
+  "República Tcheca":  "cz",
+  "Canadá":            "ca",
+  "Bósnia e Herz.":    "ba",
+  "Catar":             "qa",
+  "Suíça":             "ch",
+  "Brasil":            "br",
+  "Marrocos":          "ma",
+  "Haiti":             "ht",
+  "Escócia":           "gb-sct",
+  "EUA":               "us",
+  "Paraguai":          "py",
+  "Austrália":         "au",
+  "Turquia":           "tr",
+  "Alemanha":          "de",
+  "Curaçao":           "cw",
+  "Costa do Marfim":   "ci",
+  "Equador":           "ec",
+  "Holanda":           "nl",
+  "Japão":             "jp",
+  "Suécia":            "se",
+  "Tunísia":           "tn",
+  "Bélgica":           "be",
+  "Egito":             "eg",
+  "Irã":               "ir",
+  "Nova Zelândia":     "nz",
+  "Espanha":           "es",
+  "Cabo Verde":        "cv",
+  "Arábia Saudita":    "sa",
+  "Uruguai":           "uy",
+  "França":            "fr",
+  "Senegal":           "sn",
+  "Iraque":            "iq",
+  "Noruega":           "no",
+  "Argentina":         "ar",
+  "Argélia":           "dz",
+  "Áustria":           "at",
+  "Jordânia":          "jo",
+  "Portugal":          "pt",
+  "RD Congo":          "cd",
+  "Uzbequistão":       "uz",
+  "Colômbia":          "co",
+  "Inglaterra":        "gb-eng",
+  "Croácia":           "hr",
+  "Gana":              "gh",
+  "Panamá":            "pa",
+};
+
+function escudo(nome, size) {
+  const code = FLAG_CODES[nome];
+  if (!code) return "";
+  const w = size || 40;
+  return `<img src="https://flagcdn.com/w${w}/${code}.png" alt="${nome}" class="escudo" loading="lazy">`;
+}
+
 // ── Storage helpers ──────────────────────────────────────────────
 function getUser() {
   return localStorage.getItem("bolao_user") || null;
@@ -56,9 +115,9 @@ function renderProximosJogos() {
     <div class="jogo-card">
       <span class="jogo-grupo">Grupo ${j.grupo}</span>
       <div class="jogo-times">
-        <span>${j.mandante}</span>
+        <span class="time-mini">${escudo(j.mandante, 32)} ${j.mandante}</span>
         <span class="vs">×</span>
-        <span>${j.visitante}</span>
+        <span class="time-mini">${escudo(j.visitante, 32)} ${j.visitante}</span>
       </div>
       <div class="jogo-data">${formatarData(j.data)}</div>
     </div>
@@ -107,7 +166,7 @@ function renderPalpites() {
           ${badge}
         </div>
         <div class="palpite-jogo">
-          <span class="time">${j.mandante}</span>
+          <span class="time time-mandante">${escudo(j.mandante)} ${j.mandante}</span>
           <div class="placar-inputs">
             <input type="number" min="0" max="20"
               id="m-${j.id}" value="${temPalpite ? p.mandante : ""}"
@@ -119,7 +178,7 @@ function renderPalpites() {
               ${temResultado ? "disabled" : ""}
               placeholder="0" class="gols-input">
           </div>
-          <span class="time">${j.visitante}</span>
+          <span class="time time-visitante">${escudo(j.visitante)} ${j.visitante}</span>
         </div>
         ${temResultado
           ? `<div class="resultado-real">Resultado: ${r.mandante} × ${r.visitante}</div>`
@@ -205,7 +264,7 @@ function renderAdmin() {
     const r = resultados[j.id] || {};
     return `
       <div class="admin-jogo">
-        <span>${j.mandante} × ${j.visitante}</span>
+        <span>${escudo(j.mandante, 24)} ${j.mandante} × ${j.visitante} ${escudo(j.visitante, 24)}</span>
         <input type="number" min="0" max="20" id="am-${j.id}" value="${r.mandante ?? ""}" placeholder="0" class="gols-input">
         <span>×</span>
         <input type="number" min="0" max="20" id="av-${j.id}" value="${r.visitante ?? ""}" placeholder="0" class="gols-input">

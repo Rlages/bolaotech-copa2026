@@ -2,120 +2,253 @@ const COPA_DATA = {
   grupos: [
     {
       id: "A", paises: [
-        { nome: "México",    bandeira: "🇲🇽" },
-        { nome: "EUA",       bandeira: "🇺🇸" },
-        { nome: "Canadá",    bandeira: "🇨🇦" },
-        { nome: "Argentina", bandeira: "🇦🇷" },
+        { nome: "México",              bandeira: "🇲🇽" },
+        { nome: "África do Sul",       bandeira: "🇿🇦" },
+        { nome: "Coreia do Sul",       bandeira: "🇰🇷" },
+        { nome: "República Tcheca",    bandeira: "🇨🇿" },
       ]
     },
     {
       id: "B", paises: [
-        { nome: "Brasil",    bandeira: "🇧🇷" },
-        { nome: "França",    bandeira: "🇫🇷" },
-        { nome: "Alemanha",  bandeira: "🇩🇪" },
-        { nome: "Marrocos",  bandeira: "🇲🇦" },
+        { nome: "Canadá",              bandeira: "🇨🇦" },
+        { nome: "Bósnia e Herz.",      bandeira: "🇧🇦" },
+        { nome: "Catar",               bandeira: "🇶🇦" },
+        { nome: "Suíça",               bandeira: "🇨🇭" },
       ]
     },
     {
       id: "C", paises: [
-        { nome: "Espanha",   bandeira: "🇪🇸" },
-        { nome: "Portugal",  bandeira: "🇵🇹" },
-        { nome: "Japão",     bandeira: "🇯🇵" },
-        { nome: "Senegal",   bandeira: "🇸🇳" },
+        { nome: "Brasil",              bandeira: "🇧🇷" },
+        { nome: "Marrocos",            bandeira: "🇲🇦" },
+        { nome: "Haiti",               bandeira: "🇭🇹" },
+        { nome: "Escócia",             bandeira: "🏴󠁧󠁢󠁳󠁣󠁴󠁿" },
       ]
     },
     {
       id: "D", paises: [
-        { nome: "Inglaterra",bandeira: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
-        { nome: "Holanda",   bandeira: "🇳🇱" },
-        { nome: "Croácia",   bandeira: "🇭🇷" },
-        { nome: "Austrália", bandeira: "🇦🇺" },
+        { nome: "EUA",                 bandeira: "🇺🇸" },
+        { nome: "Paraguai",            bandeira: "🇵🇾" },
+        { nome: "Austrália",           bandeira: "🇦🇺" },
+        { nome: "Turquia",             bandeira: "🇹🇷" },
       ]
     },
     {
       id: "E", paises: [
-        { nome: "Itália",    bandeira: "🇮🇹" },
-        { nome: "Bélgica",   bandeira: "🇧🇪" },
-        { nome: "Colômbia",  bandeira: "🇨🇴" },
-        { nome: "Equador",   bandeira: "🇪🇨" },
+        { nome: "Alemanha",            bandeira: "🇩🇪" },
+        { nome: "Curaçao",             bandeira: "🇨🇼" },
+        { nome: "Costa do Marfim",     bandeira: "🇨🇮" },
+        { nome: "Equador",             bandeira: "🇪🇨" },
       ]
     },
     {
       id: "F", paises: [
-        { nome: "Uruguai",   bandeira: "🇺🇾" },
-        { nome: "Chile",     bandeira: "🇨🇱" },
-        { nome: "Suíça",     bandeira: "🇨🇭" },
-        { nome: "Nigéria",   bandeira: "🇳🇬" },
+        { nome: "Holanda",             bandeira: "🇳🇱" },
+        { nome: "Japão",               bandeira: "🇯🇵" },
+        { nome: "Suécia",              bandeira: "🇸🇪" },
+        { nome: "Tunísia",             bandeira: "🇹🇳" },
       ]
     },
     {
       id: "G", paises: [
-        { nome: "Polônia",   bandeira: "🇵🇱" },
-        { nome: "Dinamarca", bandeira: "🇩🇰" },
-        { nome: "Tunísia",   bandeira: "🇹🇳" },
-        { nome: "Venezuela", bandeira: "🇻🇪" },
+        { nome: "Bélgica",             bandeira: "🇧🇪" },
+        { nome: "Egito",               bandeira: "🇪🇬" },
+        { nome: "Irã",                 bandeira: "🇮🇷" },
+        { nome: "Nova Zelândia",       bandeira: "🇳🇿" },
       ]
     },
     {
       id: "H", paises: [
-        { nome: "Coreia Sul",bandeira: "🇰🇷" },
-        { nome: "Iran",      bandeira: "🇮🇷" },
-        { nome: "Suécia",    bandeira: "🇸🇪" },
-        { nome: "Gana",      bandeira: "🇬🇭" },
+        { nome: "Espanha",             bandeira: "🇪🇸" },
+        { nome: "Cabo Verde",          bandeira: "🇨🇻" },
+        { nome: "Arábia Saudita",      bandeira: "🇸🇦" },
+        { nome: "Uruguai",             bandeira: "🇺🇾" },
       ]
     },
     {
       id: "I", paises: [
-        { nome: "Turquia",   bandeira: "🇹🇷" },
-        { nome: "Escócia",   bandeira: "🏴󠁧󠁢󠁳󠁣󠁴󠁿" },
-        { nome: "Egito",     bandeira: "🇪🇬" },
-        { nome: "Peru",      bandeira: "🇵🇪" },
+        { nome: "França",              bandeira: "🇫🇷" },
+        { nome: "Senegal",             bandeira: "🇸🇳" },
+        { nome: "Iraque",              bandeira: "🇮🇶" },
+        { nome: "Noruega",             bandeira: "🇳🇴" },
       ]
     },
     {
       id: "J", paises: [
-        { nome: "Sérvia",    bandeira: "🇷🇸" },
-        { nome: "Rep. Checa",bandeira: "🇨🇿" },
-        { nome: "Camarões",  bandeira: "🇨🇲" },
-        { nome: "Bolívia",   bandeira: "🇧🇴" },
+        { nome: "Argentina",           bandeira: "🇦🇷" },
+        { nome: "Argélia",             bandeira: "🇩🇿" },
+        { nome: "Áustria",             bandeira: "🇦🇹" },
+        { nome: "Jordânia",            bandeira: "🇯🇴" },
       ]
     },
     {
       id: "K", paises: [
-        { nome: "Áustria",   bandeira: "🇦🇹" },
-        { nome: "Escócia",   bandeira: "🏴󠁧󠁢󠁳󠁣󠁴󠁿" },
-        { nome: "China",     bandeira: "🇨🇳" },
-        { nome: "Guatemala", bandeira: "🇬🇹" },
+        { nome: "Portugal",            bandeira: "🇵🇹" },
+        { nome: "RD Congo",            bandeira: "🇨🇩" },
+        { nome: "Uzbequistão",         bandeira: "🇺🇿" },
+        { nome: "Colômbia",            bandeira: "🇨🇴" },
       ]
     },
     {
       id: "L", paises: [
-        { nome: "Arábia Saudita", bandeira: "🇸🇦" },
-        { nome: "Costa Rica",     bandeira: "🇨🇷" },
-        { nome: "Grécia",         bandeira: "🇬🇷" },
-        { nome: "Uganda",         bandeira: "🇺🇬" },
+        { nome: "Inglaterra",          bandeira: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
+        { nome: "Croácia",             bandeira: "🇭🇷" },
+        { nome: "Gana",                bandeira: "🇬🇭" },
+        { nome: "Panamá",              bandeira: "🇵🇦" },
       ]
     },
   ],
 
-  // Jogos da fase de grupos (amostra)
+  // Fase de grupos – 72 jogos (3 rodadas × 12 grupos × 2 jogos)
   jogos: [
-    { id: 1,  grupo: "A", mandante: "México",    visitante: "EUA",          data: "2026-06-11" },
-    { id: 2,  grupo: "A", mandante: "Canadá",    visitante: "Argentina",    data: "2026-06-11" },
-    { id: 3,  grupo: "B", mandante: "Brasil",    visitante: "França",       data: "2026-06-12" },
-    { id: 4,  grupo: "B", mandante: "Alemanha",  visitante: "Marrocos",     data: "2026-06-12" },
-    { id: 5,  grupo: "C", mandante: "Espanha",   visitante: "Portugal",     data: "2026-06-13" },
-    { id: 6,  grupo: "C", mandante: "Japão",     visitante: "Senegal",      data: "2026-06-13" },
-    { id: 7,  grupo: "D", mandante: "Inglaterra",visitante: "Holanda",      data: "2026-06-14" },
-    { id: 8,  grupo: "D", mandante: "Croácia",   visitante: "Austrália",    data: "2026-06-14" },
-    { id: 9,  grupo: "E", mandante: "Itália",    visitante: "Bélgica",      data: "2026-06-15" },
-    { id: 10, grupo: "E", mandante: "Colômbia",  visitante: "Equador",      data: "2026-06-15" },
-    { id: 11, grupo: "F", mandante: "Uruguai",   visitante: "Chile",        data: "2026-06-16" },
-    { id: 12, grupo: "F", mandante: "Suíça",     visitante: "Nigéria",      data: "2026-06-16" },
-    { id: 13, grupo: "A", mandante: "México",    visitante: "Canadá",       data: "2026-06-17" },
-    { id: 14, grupo: "A", mandante: "EUA",       visitante: "Argentina",    data: "2026-06-17" },
-    { id: 15, grupo: "B", mandante: "Brasil",    visitante: "Alemanha",     data: "2026-06-18" },
-    { id: 16, grupo: "B", mandante: "França",    visitante: "Marrocos",     data: "2026-06-18" },
+    // ── RODADA 1 ─────────────────────────────────────────────────────
+
+    // Grupo A – 11/06
+    { id:  1, grupo: "A", mandante: "México",           visitante: "África do Sul",   data: "2026-06-11" },
+    { id:  2, grupo: "A", mandante: "Coreia do Sul",    visitante: "República Tcheca",data: "2026-06-11" },
+
+    // Grupo B – 12/06
+    { id:  3, grupo: "B", mandante: "Canadá",           visitante: "Bósnia e Herz.",  data: "2026-06-12" },
+    { id:  4, grupo: "B", mandante: "Catar",            visitante: "Suíça",            data: "2026-06-12" },
+
+    // Grupo C – 13/06
+    { id:  5, grupo: "C", mandante: "Brasil",           visitante: "Marrocos",         data: "2026-06-13" },
+    { id:  6, grupo: "C", mandante: "Haiti",            visitante: "Escócia",          data: "2026-06-13" },
+
+    // Grupo D – 14/06
+    { id:  7, grupo: "D", mandante: "EUA",              visitante: "Paraguai",         data: "2026-06-14" },
+    { id:  8, grupo: "D", mandante: "Austrália",        visitante: "Turquia",          data: "2026-06-14" },
+
+    // Grupo E – 15/06
+    { id:  9, grupo: "E", mandante: "Alemanha",         visitante: "Curaçao",          data: "2026-06-15" },
+    { id: 10, grupo: "E", mandante: "Costa do Marfim", visitante: "Equador",           data: "2026-06-15" },
+
+    // Grupo F – 16/06
+    { id: 11, grupo: "F", mandante: "Holanda",          visitante: "Japão",            data: "2026-06-16" },
+    { id: 12, grupo: "F", mandante: "Suécia",           visitante: "Tunísia",          data: "2026-06-16" },
+
+    // Grupo G – 17/06
+    { id: 13, grupo: "G", mandante: "Bélgica",          visitante: "Egito",            data: "2026-06-17" },
+    { id: 14, grupo: "G", mandante: "Irã",              visitante: "Nova Zelândia",    data: "2026-06-17" },
+
+    // Grupo H – 18/06
+    { id: 15, grupo: "H", mandante: "Espanha",          visitante: "Cabo Verde",       data: "2026-06-18" },
+    { id: 16, grupo: "H", mandante: "Arábia Saudita",   visitante: "Uruguai",          data: "2026-06-18" },
+
+    // Grupo I – 19/06
+    { id: 17, grupo: "I", mandante: "França",           visitante: "Senegal",          data: "2026-06-19" },
+    { id: 18, grupo: "I", mandante: "Iraque",           visitante: "Noruega",          data: "2026-06-19" },
+
+    // Grupo J – 20/06
+    { id: 19, grupo: "J", mandante: "Argentina",        visitante: "Argélia",          data: "2026-06-20" },
+    { id: 20, grupo: "J", mandante: "Áustria",          visitante: "Jordânia",         data: "2026-06-20" },
+
+    // Grupo K – 21/06
+    { id: 21, grupo: "K", mandante: "Portugal",         visitante: "RD Congo",         data: "2026-06-21" },
+    { id: 22, grupo: "K", mandante: "Uzbequistão",      visitante: "Colômbia",         data: "2026-06-21" },
+
+    // Grupo L – 22/06
+    { id: 23, grupo: "L", mandante: "Inglaterra",       visitante: "Croácia",          data: "2026-06-22" },
+    { id: 24, grupo: "L", mandante: "Gana",             visitante: "Panamá",           data: "2026-06-22" },
+
+    // ── RODADA 2 ─────────────────────────────────────────────────────
+
+    // Grupo A – 17/06
+    { id: 25, grupo: "A", mandante: "República Tcheca", visitante: "África do Sul",   data: "2026-06-17" },
+    { id: 26, grupo: "A", mandante: "México",           visitante: "Coreia do Sul",   data: "2026-06-17" },
+
+    // Grupo B – 17/06
+    { id: 27, grupo: "B", mandante: "Suíça",            visitante: "Bósnia e Herz.",  data: "2026-06-17" },
+    { id: 28, grupo: "B", mandante: "Canadá",           visitante: "Catar",            data: "2026-06-17" },
+
+    // Grupo C – 18/06
+    { id: 29, grupo: "C", mandante: "Escócia",          visitante: "Marrocos",         data: "2026-06-18" },
+    { id: 30, grupo: "C", mandante: "Brasil",           visitante: "Haiti",            data: "2026-06-18" },
+
+    // Grupo D – 18/06
+    { id: 31, grupo: "D", mandante: "Turquia",          visitante: "Paraguai",         data: "2026-06-18" },
+    { id: 32, grupo: "D", mandante: "EUA",              visitante: "Austrália",        data: "2026-06-18" },
+
+    // Grupo E – 19/06
+    { id: 33, grupo: "E", mandante: "Equador",          visitante: "Curaçao",          data: "2026-06-19" },
+    { id: 34, grupo: "E", mandante: "Alemanha",         visitante: "Costa do Marfim", data: "2026-06-19" },
+
+    // Grupo F – 19/06
+    { id: 35, grupo: "F", mandante: "Tunísia",          visitante: "Japão",            data: "2026-06-19" },
+    { id: 36, grupo: "F", mandante: "Holanda",          visitante: "Suécia",           data: "2026-06-19" },
+
+    // Grupo G – 20/06
+    { id: 37, grupo: "G", mandante: "Nova Zelândia",    visitante: "Egito",            data: "2026-06-20" },
+    { id: 38, grupo: "G", mandante: "Bélgica",          visitante: "Irã",              data: "2026-06-20" },
+
+    // Grupo H – 20/06
+    { id: 39, grupo: "H", mandante: "Uruguai",          visitante: "Cabo Verde",       data: "2026-06-20" },
+    { id: 40, grupo: "H", mandante: "Espanha",          visitante: "Arábia Saudita",   data: "2026-06-20" },
+
+    // Grupo I – 21/06
+    { id: 41, grupo: "I", mandante: "Noruega",          visitante: "Senegal",          data: "2026-06-21" },
+    { id: 42, grupo: "I", mandante: "França",           visitante: "Iraque",           data: "2026-06-21" },
+
+    // Grupo J – 21/06
+    { id: 43, grupo: "J", mandante: "Jordânia",         visitante: "Argélia",          data: "2026-06-21" },
+    { id: 44, grupo: "J", mandante: "Argentina",        visitante: "Áustria",          data: "2026-06-21" },
+
+    // Grupo K – 22/06
+    { id: 45, grupo: "K", mandante: "Colômbia",         visitante: "RD Congo",         data: "2026-06-22" },
+    { id: 46, grupo: "K", mandante: "Portugal",         visitante: "Uzbequistão",      data: "2026-06-22" },
+
+    // Grupo L – 22/06
+    { id: 47, grupo: "L", mandante: "Panamá",           visitante: "Croácia",          data: "2026-06-22" },
+    { id: 48, grupo: "L", mandante: "Inglaterra",       visitante: "Gana",             data: "2026-06-22" },
+
+    // ── RODADA 3 (simultâneos por grupo) ─────────────────────────────
+
+    // Grupo A – 23/06
+    { id: 49, grupo: "A", mandante: "República Tcheca", visitante: "México",          data: "2026-06-23" },
+    { id: 50, grupo: "A", mandante: "África do Sul",    visitante: "Coreia do Sul",   data: "2026-06-23" },
+
+    // Grupo B – 23/06
+    { id: 51, grupo: "B", mandante: "Suíça",            visitante: "Canadá",           data: "2026-06-23" },
+    { id: 52, grupo: "B", mandante: "Bósnia e Herz.",   visitante: "Catar",            data: "2026-06-23" },
+
+    // Grupo C – 24/06
+    { id: 53, grupo: "C", mandante: "Escócia",          visitante: "Brasil",           data: "2026-06-24" },
+    { id: 54, grupo: "C", mandante: "Marrocos",         visitante: "Haiti",            data: "2026-06-24" },
+
+    // Grupo D – 24/06
+    { id: 55, grupo: "D", mandante: "Turquia",          visitante: "EUA",              data: "2026-06-24" },
+    { id: 56, grupo: "D", mandante: "Paraguai",         visitante: "Austrália",        data: "2026-06-24" },
+
+    // Grupo E – 25/06
+    { id: 57, grupo: "E", mandante: "Equador",          visitante: "Alemanha",         data: "2026-06-25" },
+    { id: 58, grupo: "E", mandante: "Curaçao",          visitante: "Costa do Marfim", data: "2026-06-25" },
+
+    // Grupo F – 25/06
+    { id: 59, grupo: "F", mandante: "Tunísia",          visitante: "Holanda",          data: "2026-06-25" },
+    { id: 60, grupo: "F", mandante: "Japão",            visitante: "Suécia",           data: "2026-06-25" },
+
+    // Grupo G – 26/06
+    { id: 61, grupo: "G", mandante: "Nova Zelândia",    visitante: "Bélgica",          data: "2026-06-26" },
+    { id: 62, grupo: "G", mandante: "Egito",            visitante: "Irã",              data: "2026-06-26" },
+
+    // Grupo H – 26/06
+    { id: 63, grupo: "H", mandante: "Uruguai",          visitante: "Espanha",          data: "2026-06-26" },
+    { id: 64, grupo: "H", mandante: "Cabo Verde",       visitante: "Arábia Saudita",   data: "2026-06-26" },
+
+    // Grupo I – 27/06
+    { id: 65, grupo: "I", mandante: "Noruega",          visitante: "França",           data: "2026-06-27" },
+    { id: 66, grupo: "I", mandante: "Senegal",          visitante: "Iraque",           data: "2026-06-27" },
+
+    // Grupo J – 27/06
+    { id: 67, grupo: "J", mandante: "Jordânia",         visitante: "Argentina",        data: "2026-06-27" },
+    { id: 68, grupo: "J", mandante: "Argélia",          visitante: "Áustria",          data: "2026-06-27" },
+
+    // Grupo K – 27/06
+    { id: 69, grupo: "K", mandante: "Colômbia",         visitante: "Portugal",         data: "2026-06-27" },
+    { id: 70, grupo: "K", mandante: "RD Congo",         visitante: "Uzbequistão",      data: "2026-06-27" },
+
+    // Grupo L – 27/06
+    { id: 71, grupo: "L", mandante: "Panamá",           visitante: "Inglaterra",       data: "2026-06-27" },
+    { id: 72, grupo: "L", mandante: "Croácia",          visitante: "Gana",             data: "2026-06-27" },
   ],
 
   regras: {
