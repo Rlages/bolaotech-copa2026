@@ -428,14 +428,6 @@ nav {
   margin-left: auto;
 }
 
-.palpite-jogo {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: .5rem;
-  padding: 1.3rem 1.1rem 1rem;
-}
-
 .time {
   font-weight: 700;
   font-size: .82rem;
@@ -471,6 +463,67 @@ nav {
   flex-shrink: 0;
 }
 
+/* ── Seleção de vencedor ─────────────────────────────────────────── */
+.palpite-jogo {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: .6rem;
+  padding: 1rem 1.1rem .85rem;
+}
+
+.btn-time {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .5rem;
+  padding: .9rem .5rem .75rem;
+  border: 2px solid var(--cinza2);
+  border-radius: 12px;
+  background: var(--cinza);
+  cursor: pointer;
+  transition: all .2s;
+  font-family: 'Inter', sans-serif;
+}
+
+.btn-time:hover:not(:disabled) {
+  border-color: var(--verde);
+  background: rgba(0,102,51,.07);
+  transform: translateY(-1px);
+}
+
+.btn-time.ativo {
+  border-color: var(--verde);
+  background: rgba(0,102,51,.1);
+  box-shadow: 0 0 0 3px rgba(0,102,51,.15);
+}
+
+.btn-time:disabled {
+  cursor: default;
+  opacity: .75;
+}
+
+.btn-time-nome {
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--texto);
+  text-align: center;
+  line-height: 1.35;
+}
+
+.vs-divider {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  color: var(--cinza3);
+  letter-spacing: 2px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 .1rem;
+}
+
+/* Admin ainda usa inputs de placar */
 .placar-inputs {
   display: flex;
   align-items: center;

@@ -58,20 +58,18 @@ function escudo(nome, size) {
 }
 
 // ── Storage helpers ──────────────────────────────────────────────
-function getUser() {
-  return localStorage.getItem("bolao_user") || null;
-}
-function setUser(nome) {
-  localStorage.setItem("bolao_user", nome);
-}
+function getUser()  { return localStorage.getItem("bolao_user") || null; }
+function setUser(n) { localStorage.setItem("bolao_user", n); }
+
 function getPalpites() {
   return JSON.parse(localStorage.getItem("bolao_palpites") || "{}");
 }
-function savePalpite(jogoId, mandanteGols, visitanteGols) {
+function savePalpite(jogoId, vencedor) {
   const p = getPalpites();
-  p[jogoId] = { mandante: parseInt(mandanteGols), visitante: parseInt(visitanteGols) };
+  p[jogoId] = { vencedor };
   localStorage.setItem("bolao_palpites", JSON.stringify(p));
 }
+
 function getResultados() {
   return JSON.parse(localStorage.getItem("bolao_resultados") || "{}");
 }
@@ -81,15 +79,29 @@ function saveResultado(jogoId, mandanteGols, visitanteGols) {
   localStorage.setItem("bolao_resultados", JSON.stringify(r));
 }
 
+// ── Seleção temporária antes de salvar ────────────────────────────
+const _selecoes = {};
+
+function escolherVencedor(jogoId, opcao) {
+  _selecoes[jogoId] = opcao;
+  document.querySelectorAll(`.btn-time[data-jogo="${jogoId}"]`).forEach(btn => {
+    btn.classList.toggle("ativo", btn.dataset.opcao === opcao);
+  });
+}
+
 // ── Scoring ───────────────────────────────────────────────────────
+function vencedorDoResultado(r) {
+  if (!r) return null;
+  if (r.mandante > r.visitante) return "A";
+  if (r.visitante > r.mandante) return "B";
+  return null; // empate não pontua
+}
+
 function calcularPontos(palpite, resultado) {
   if (!palpite || !resultado) return 0;
-  if (palpite.mandante === resultado.mandante && palpite.visitante === resultado.visitante)
-    return COPA_DATA.regras.acertoExato;
-  const signoP = Math.sign(palpite.mandante - palpite.visitante);
-  const signoR = Math.sign(resultado.mandante - resultado.visitante);
-  if (signoP === signoR) return COPA_DATA.regras.acertoVencedor;
-  return 0;
+  const real = vencedorDoResultado(resultado);
+  if (!real) return 0;
+  return palpite.vencedor === real ? COPA_DATA.regras.acertoVencedor : 0;
 }
 
 // ── Page: index ───────────────────────────────────────────────────
@@ -139,24 +151,25 @@ function renderPalpites() {
 
   document.getElementById("user-nome").textContent = user;
 
-  const palpites = getPalpites();
+  const palpites   = getPalpites();
   const resultados = getResultados();
 
   container.innerHTML = COPA_DATA.jogos.map(j => {
     const p = palpites[j.id] || {};
     const r = resultados[j.id];
     const pts = calcularPontos(p, r);
-    const temPalpite = p.mandante !== undefined;
+    const temPalpite  = !!p.vencedor;
     const temResultado = !!r;
 
     let badge = "";
     if (temResultado && temPalpite) {
-      badge = pts === 3
-        ? `<span class="badge acerto-exato">+3 pts</span>`
-        : pts === 1
-        ? `<span class="badge acerto-vencedor">+1 pt</span>`
+      badge = pts >= 1
+        ? `<span class="badge acerto-vencedor">+${pts} pt</span>`
         : `<span class="badge errou">0 pts</span>`;
     }
+
+    const vReal = temResultado ? vencedorDoResultado(r) : null;
+    const nomeVencedorReal = vReal === "A" ? j.mandante : vReal === "B" ? j.visitante : null;
 
     return `
       <div class="palpite-card ${temResultado ? "encerrado" : ""}">
@@ -166,33 +179,39 @@ function renderPalpites() {
           ${badge}
         </div>
         <div class="palpite-jogo">
-          <span class="time time-mandante">${escudo(j.mandante)} ${j.mandante}</span>
-          <div class="placar-inputs">
-            <input type="number" min="0" max="20"
-              id="m-${j.id}" value="${temPalpite ? p.mandante : ""}"
-              ${temResultado ? "disabled" : ""}
-              placeholder="0" class="gols-input">
-            <span class="x">×</span>
-            <input type="number" min="0" max="20"
-              id="v-${j.id}" value="${temPalpite ? p.visitante : ""}"
-              ${temResultado ? "disabled" : ""}
-              placeholder="0" class="gols-input">
-          </div>
-          <span class="time time-visitante">${escudo(j.visitante)} ${j.visitante}</span>
+          <button
+            class="btn-time ${p.vencedor === 'A' ? 'ativo' : ''}"
+            data-jogo="${j.id}" data-opcao="A"
+            onclick="escolherVencedor(${j.id}, 'A')"
+            ${temResultado ? "disabled" : ""}>
+            ${escudo(j.mandante)}
+            <span class="btn-time-nome">${j.mandante}</span>
+          </button>
+          <div class="vs-divider">VS</div>
+          <button
+            class="btn-time ${p.vencedor === 'B' ? 'ativo' : ''}"
+            data-jogo="${j.id}" data-opcao="B"
+            onclick="escolherVencedor(${j.id}, 'B')"
+            ${temResultado ? "disabled" : ""}>
+            ${escudo(j.visitante)}
+            <span class="btn-time-nome">${j.visitante}</span>
+          </button>
         </div>
         ${temResultado
-          ? `<div class="resultado-real">Resultado: ${r.mandante} × ${r.visitante}</div>`
-          : `<button onclick="salvarPalpite(${j.id})" class="btn-salvar">Salvar</button>`}
+          ? `<div class="resultado-real">
+               Resultado: ${r.mandante} × ${r.visitante}
+               ${nomeVencedorReal ? `· <strong>${nomeVencedorReal} venceu</strong>` : "· Empate"}
+             </div>`
+          : `<button onclick="salvarPalpite(${j.id})" class="btn-salvar">Salvar palpite</button>`}
       </div>
     `;
   }).join("");
 }
 
 function salvarPalpite(jogoId) {
-  const m = document.getElementById(`m-${jogoId}`).value;
-  const v = document.getElementById(`v-${jogoId}`).value;
-  if (m === "" || v === "") return mostrarToast("Preencha os dois placares!");
-  savePalpite(jogoId, m, v);
+  const v = _selecoes[jogoId];
+  if (!v) return mostrarToast("Escolha um vencedor!");
+  savePalpite(jogoId, v);
   mostrarToast("Palpite salvo!");
   renderPalpites();
 }
@@ -212,14 +231,13 @@ function renderPlacar() {
   const container = document.getElementById("placar-container");
   if (!container) return;
 
-  // Demo: pontuação do usuário atual
   const user = getUser();
   if (!user) {
     container.innerHTML = `<p class="aviso">Cadastre seu nome em <a href="palpites.html">Palpites</a> para aparecer aqui.</p>`;
     return;
   }
 
-  const palpites = getPalpites();
+  const palpites   = getPalpites();
   const resultados = getResultados();
   let total = 0;
   let detalhes = [];
@@ -230,7 +248,10 @@ function renderPlacar() {
     const pts = calcularPontos(p, r);
     if (r) {
       total += pts;
-      detalhes.push({ jogo: j, palpite: p, resultado: r, pts });
+      const vReal = vencedorDoResultado(r);
+      const nomeVReal  = vReal === "A" ? j.mandante : vReal === "B" ? j.visitante : "Empate";
+      const nomePalpite = p?.vencedor === "A" ? j.mandante : p?.vencedor === "B" ? j.visitante : "-";
+      detalhes.push({ jogo: j, nomePalpite, nomeVReal, resultado: r, pts });
     }
   });
 
@@ -243,10 +264,10 @@ function renderPlacar() {
       <thead><tr><th>Jogo</th><th>Seu Palpite</th><th>Resultado</th><th>Pts</th></tr></thead>
       <tbody>
         ${detalhes.map(d => `
-          <tr class="${d.pts === 3 ? "acerto-exato" : d.pts === 1 ? "acerto-vencedor" : "errou"}">
+          <tr class="${d.pts >= 1 ? "acerto-vencedor" : "errou"}">
             <td>${d.jogo.mandante} × ${d.jogo.visitante}</td>
-            <td>${d.palpite ? `${d.palpite.mandante} × ${d.palpite.visitante}` : "-"}</td>
-            <td>${d.resultado.mandante} × ${d.resultado.visitante}</td>
+            <td>${d.nomePalpite}</td>
+            <td>${d.nomeVReal} (${d.resultado.mandante}–${d.resultado.visitante})</td>
             <td>${d.pts}</td>
           </tr>
         `).join("")}
