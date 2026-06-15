@@ -94,7 +94,7 @@ function vencedorDoResultado(r) {
   if (!r) return null;
   if (r.mandante > r.visitante) return "A";
   if (r.visitante > r.mandante) return "B";
-  return null; // empate não pontua
+  return "E"; // empate
 }
 
 function calcularPontos(palpite, resultado) {
@@ -268,7 +268,14 @@ function renderPalpites() {
             ${escudo(j.mandante)}
             <span class="btn-time-nome">${j.mandante}</span>
           </button>
-          <div class="vs-divider">VS</div>
+          <button
+            class="btn-empate ${p.vencedor === 'E' ? 'ativo' : ''}"
+            data-jogo="${j.id}" data-opcao="E"
+            onclick="escolherVencedor(${j.id}, 'E')"
+            ${temResultado ? "disabled" : ""}>
+            <span class="btn-empate-icon">=</span>
+            <span>Empate</span>
+          </button>
           <button
             class="btn-time ${p.vencedor === 'B' ? 'ativo' : ''}"
             data-jogo="${j.id}" data-opcao="B"
@@ -281,7 +288,7 @@ function renderPalpites() {
         ${temResultado
           ? `<div class="resultado-real">
                Resultado: ${r.mandante} × ${r.visitante}
-               ${nomeVencedorReal ? `· <strong>${nomeVencedorReal} venceu</strong>` : "· Empate"}
+               · <strong>${vReal === "E" ? "Empate" : vReal === "A" ? j.mandante + " venceu" : j.visitante + " venceu"}</strong>
              </div>`
           : `<button onclick="salvarPalpite(${j.id})" class="btn-salvar">Salvar palpite</button>`}
       </div>
@@ -331,7 +338,7 @@ function renderPlacar() {
       total += pts;
       const vReal = vencedorDoResultado(r);
       const nomeVReal  = vReal === "A" ? j.mandante : vReal === "B" ? j.visitante : "Empate";
-      const nomePalpite = p?.vencedor === "A" ? j.mandante : p?.vencedor === "B" ? j.visitante : "-";
+      const nomePalpite = p?.vencedor === "A" ? j.mandante : p?.vencedor === "B" ? j.visitante : p?.vencedor === "E" ? "Empate" : "-";
       detalhes.push({ jogo: j, nomePalpite, nomeVReal, resultado: r, pts });
     }
   });
