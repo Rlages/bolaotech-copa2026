@@ -20,23 +20,11 @@
 
   <div class="hero hero-compact">
     <h1>Seus Palpites</h1>
-    <p>Acerto exato: 3 pts &nbsp;|&nbsp; Acerto vencedor: 1 pt</p>
+    <p>Acerto vencedor: 1 pt &nbsp;|&nbsp; Aposte antes do jogo começar</p>
   </div>
 
   <main class="section">
-    <!-- Se ainda não tem nome cadastrado -->
-    <div id="nome-section">
-      <h2>Bem-vindo ao Bolão!</h2>
-      <p>Digite seu nome para começar a palpitar.</p>
-      <div class="input-group">
-        <input type="text" id="input-nome" class="input-text"
-               placeholder="Seu nome..." maxlength="30"
-               onkeydown="if(event.key==='Enter') definirNome()">
-        <button class="btn" onclick="definirNome()">Entrar</button>
-      </div>
-    </div>
-
-    <!-- Info do usuário -->
+    <!-- Info do usuário logado -->
     <div id="user-info" style="display:none;">
       Jogando como: <strong id="user-nome"></strong>
     </div>
@@ -49,19 +37,8 @@
     BolãoTech Copa 2026 &copy; 2026
   </footer>
 
+  <script src="js/api.js"></script>
   <script src="js/data.js"></script>
   <script src="js/app.js"></script>
-  <script>
-    // Show user info bar if already logged in
-    document.addEventListener("DOMContentLoaded", () => {
-      const user = localStorage.getItem("bolao_user");
-      if (user) {
-        document.getElementById("user-info").style.display = "flex";
-        document.getElementById("palpites-container").style.display = "flex";
-      } else {
-        document.getElementById("nome-section").style.display = "block";
-      }
-    });
-  </script>
 </body>
 </html>

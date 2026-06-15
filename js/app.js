@@ -53,97 +53,28 @@ const FLAG_CODES = {
 function escudo(nome, size) {
   const code = FLAG_CODES[nome];
   if (!code) return "";
-  const w = size || 40;
-  return `<img src="https://flagcdn.com/w${w}/${code}.png" alt="${nome}" class="escudo" loading="lazy">`;
+  return `<img src="https://flagcdn.com/w${size || 40}/${code}.png" alt="${nome}" class="escudo" loading="lazy">`;
 }
 
-// ── Storage helpers ──────────────────────────────────────────────
-function getUser()  { return localStorage.getItem("bolao_user") || null; }
-function setUser(n) { localStorage.setItem("bolao_user", n); }
+// ── Estado global (carregado da API) ─────────────────────────────
+let _palpites      = {};
+let _todosPalpites = {};
+let _resultados    = {};
+let _acessos       = {};
 
-function getPalpites() {
-  return JSON.parse(localStorage.getItem("bolao_palpites") || "{}");
-}
-function savePalpite(jogoId, vencedor) {
-  const p = getPalpites();
-  p[jogoId] = { vencedor };
-  localStorage.setItem("bolao_palpites", JSON.stringify(p));
-  const user = getUser();
-  if (user) {
-    const all = getTodosPalpites();
-    if (!all[user]) all[user] = {};
-    all[user][jogoId] = { vencedor };
-    localStorage.setItem("bolao_todos_palpites", JSON.stringify(all));
-  }
-}
-
-function getTodosPalpites() {
-  return JSON.parse(localStorage.getItem("bolao_todos_palpites") || "{}");
-}
-function sincronizarUsuarioAtual() {
-  const user = getUser();
-  if (!user) return;
-  const palpites = getPalpites();
-  if (Object.keys(palpites).length === 0) return;
-  const all = getTodosPalpites();
-  all[user] = { ...(all[user] || {}), ...palpites };
-  localStorage.setItem("bolao_todos_palpites", JSON.stringify(all));
-}
-
-function getResultados() {
-  return JSON.parse(localStorage.getItem("bolao_resultados") || "{}");
-}
-function saveResultado(jogoId, mandanteGols, visitanteGols) {
-  const r = getResultados();
-  r[jogoId] = { mandante: parseInt(mandanteGols), visitante: parseInt(visitanteGols) };
-  localStorage.setItem("bolao_resultados", JSON.stringify(r));
-}
-
-// ── Códigos de acesso diário ──────────────────────────────────────
-const BOLAO_CODE_SECRET = "bolaotech2026";
-
-async function sha256(str) {
-  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
-}
+function getUser()         { return getUsuario()?.nome || null; }
+function getPalpites()     { return _palpites; }
+function getResultados()   { return _resultados; }
+function getTodosPalpites(){ return _todosPalpites; }
 
 function rotacaoDia(data) {
   return (COPA_DATA.codigoRotacoes && COPA_DATA.codigoRotacoes[data]) || 0;
 }
-
-async function gerarCodigoDia(data) {
-  const hash = await sha256(data + BOLAO_CODE_SECRET + rotacaoDia(data));
-  return hash.slice(0, 6).toUpperCase();
-}
-
-function getAcessosDia() {
-  return JSON.parse(localStorage.getItem("bolao_acessos") || "{}");
-}
-function setAcessoDia(data) {
-  const acc = getAcessosDia();
-  acc[data] = rotacaoDia(data);
-  localStorage.setItem("bolao_acessos", JSON.stringify(acc));
-}
 function temAcessoDia(data) {
-  return getAcessosDia()[data] === rotacaoDia(data);
+  return _acessos[data] === rotacaoDia(data);
 }
 
-async function desbloquearDia(data) {
-  const inputEl  = document.getElementById(`codigo-${data}`);
-  const erroEl   = document.getElementById(`codigo-erro-${data}`);
-  const input    = inputEl.value.trim().toUpperCase();
-  const expected = await gerarCodigoDia(data);
-  if (input === expected) {
-    setAcessoDia(data);
-    renderPalpites();
-  } else {
-    erroEl.style.display = "block";
-    inputEl.value = "";
-    inputEl.focus();
-  }
-}
-
-// ── Seleção temporária antes de salvar ────────────────────────────
+// ── Seleção temporária antes de salvar ───────────────────────────
 const _selecoes = {};
 
 function escolherVencedor(jogoId, opcao) {
@@ -153,12 +84,12 @@ function escolherVencedor(jogoId, opcao) {
   });
 }
 
-// ── Scoring ───────────────────────────────────────────────────────
+// ── Scoring ──────────────────────────────────────────────────────
 function vencedorDoResultado(r) {
   if (!r) return null;
   if (r.mandante > r.visitante) return "A";
   if (r.visitante > r.mandante) return "B";
-  return "E"; // empate
+  return "E";
 }
 
 function calcularPontos(palpite, resultado) {
@@ -168,16 +99,28 @@ function calcularPontos(palpite, resultado) {
   return palpite.vencedor === real ? COPA_DATA.regras.acertoVencedor : 0;
 }
 
+// ── Carrega todos os dados da API ─────────────────────────────────
+async function carregarDados() {
+  const [p, todos, r, acc] = await Promise.all([
+    apiGet('/palpites'),
+    apiGet('/palpites/todos'),
+    apiGet('/resultados'),
+    apiGet('/acessos'),
+  ]);
+  _palpites      = p    || {};
+  _todosPalpites = todos || {};
+  _resultados    = r    || {};
+  _acessos       = acc  || {};
+}
+
 // ── Page: index – Copa dinâmica ──────────────────────────────────
 function renderCopaDinamico() {
   const container = document.getElementById("copa-dinamico");
   if (!container) return;
 
   const hoje = new Date().toISOString().slice(0, 10);
-  const resultados = getResultados();
-  const jogosHoje = COPA_DATA.jogos.filter(j => j.data === hoje);
+  const jogosHoje   = COPA_DATA.jogos.filter(j => j.data === hoje);
   const proximoJogo = COPA_DATA.jogos.find(j => j.data > hoje);
-  const jogosFuturos = COPA_DATA.jogos.filter(j => j.data > hoje);
 
   let html = "";
 
@@ -190,7 +133,7 @@ function renderCopaDinamico() {
         </div>
         <div class="hoje-lista">
           ${jogosHoje.map(j => {
-            const r = resultados[j.id];
+            const r = _resultados[j.id];
             return `
               <div class="hoje-jogo">
                 <span class="hoje-time">${escudo(j.mandante, 28)} <span>${j.mandante}</span></span>
@@ -230,9 +173,9 @@ function renderCopaDinamico() {
     html = `<div class="copa-encerrada">🏆 A fase de grupos encerrou! Acompanhe o placar final.</div>`;
   }
 
-  const totalJogos = COPA_DATA.jogos.length;
-  const jogosComResultado = Object.keys(resultados).length;
-  const progresso = Math.round((jogosComResultado / totalJogos) * 100);
+  const totalJogos        = COPA_DATA.jogos.length;
+  const jogosComResultado = Object.keys(_resultados).length;
+  const progresso         = Math.round((jogosComResultado / totalJogos) * 100);
 
   html += `
     <div class="progresso-box">
@@ -249,7 +192,7 @@ function renderCopaDinamico() {
   container.innerHTML = html;
 }
 
-// ── Page: index ───────────────────────────────────────────────────
+// ── Page: index ──────────────────────────────────────────────────
 function renderGrupos() {
   const container = document.getElementById("grupos-container");
   if (!container) return;
@@ -263,41 +206,18 @@ function renderGrupos() {
   `).join("");
 }
 
-function renderProximosJogos() {
-  const container = document.getElementById("proximos-jogos");
-  if (!container) return;
-  const resultados = getResultados();
-  const semResultado = COPA_DATA.jogos.filter(j => !resultados[j.id]).slice(0, 6);
-  container.innerHTML = semResultado.map(j => `
-    <div class="jogo-card">
-      <span class="jogo-grupo">Grupo ${j.grupo}</span>
-      <div class="jogo-times">
-        <span class="time-mini">${escudo(j.mandante, 32)} ${j.mandante}</span>
-        <span class="vs">×</span>
-        <span class="time-mini">${escudo(j.visitante, 32)} ${j.visitante}</span>
-      </div>
-      <div class="jogo-data">${formatarData(j.data)}</div>
-    </div>
-  `).join("") || "<p class='sem-jogos'>Todos os jogos já têm resultado!</p>";
-}
-
 // ── Page: palpites ────────────────────────────────────────────────
 function renderPalpites() {
   const container = document.getElementById("palpites-container");
   if (!container) return;
 
   const user = getUser();
-  if (!user) {
-    const nomeSection = document.getElementById("nome-section");
-    if (nomeSection) nomeSection.style.display = "block";
-    container.style.display = "none";
-    return;
+  if (user) {
+    const el = document.getElementById("user-nome");
+    if (el) el.textContent = user;
+    const info = document.getElementById("user-info");
+    if (info) info.style.display = "flex";
   }
-
-  document.getElementById("user-nome").textContent = user;
-
-  const palpites   = getPalpites();
-  const resultados = getResultados();
 
   const hoje = new Date().toISOString().slice(0, 10);
   const jogosPendentes = COPA_DATA.jogos.filter(j => j.data >= hoje);
@@ -313,17 +233,15 @@ function renderPalpites() {
     porData[j.data].push(j);
   });
 
-  const datas = Object.keys(porData).sort();
-
-  container.innerHTML = datas.map(data => {
+  container.innerHTML = Object.keys(porData).sort().map(data => {
     const jogos  = porData[data];
     const acesso = temAcessoDia(data);
 
     let secaoConteudo;
     if (acesso) {
       const cards = jogos.map(j => {
-        const p = palpites[j.id] || {};
-        const r = resultados[j.id];
+        const p = _palpites[j.id] || {};
+        const r = _resultados[j.id];
         const pts = calcularPontos(p, r);
         const temPalpite   = !!p.vencedor;
         const temResultado = !!r;
@@ -407,22 +325,41 @@ function renderPalpites() {
   }).join("");
 }
 
-function salvarPalpite(jogoId) {
+async function salvarPalpite(jogoId) {
   const v = _selecoes[jogoId];
   if (!v) return mostrarToast("Escolha um vencedor!");
-  savePalpite(jogoId, v);
+
+  const result = await apiPost('/palpites', { jogoId, vencedor: v });
+  if (!result) return;
+
+  if (result.erro) return mostrarToast(result.erro);
+
+  _palpites[jogoId] = { vencedor: v };
+  const nome = getUser();
+  if (nome) {
+    if (!_todosPalpites[nome]) _todosPalpites[nome] = {};
+    _todosPalpites[nome][jogoId] = { vencedor: v };
+  }
+
   mostrarToast("Palpite salvo!");
   renderPalpites();
 }
 
-function definirNome() {
-  const input = document.getElementById("input-nome");
-  const nome = input.value.trim();
-  if (!nome) return mostrarToast("Digite seu nome!");
-  setUser(nome);
-  sincronizarUsuarioAtual();
-  document.getElementById("nome-section").style.display = "none";
-  document.getElementById("palpites-container").style.display = "flex";
+async function desbloquearDia(data) {
+  const inputEl = document.getElementById(`codigo-${data}`);
+  const erroEl  = document.getElementById(`codigo-erro-${data}`);
+  const codigo  = inputEl.value.trim().toUpperCase();
+
+  const result = await apiPost('/acessos', { data, codigo });
+
+  if (!result || result.erro) {
+    erroEl.style.display = "block";
+    inputEl.value = "";
+    inputEl.focus();
+    return;
+  }
+
+  _acessos[data] = rotacaoDia(data);
   renderPalpites();
 }
 
@@ -433,22 +370,20 @@ function renderPlacar() {
 
   const user = getUser();
   if (!user) {
-    container.innerHTML = `<p class="aviso">Cadastre seu nome em <a href="palpites.html">Palpites</a> para aparecer aqui.</p>`;
+    container.innerHTML = `<p class="aviso">Faça login para ver seu placar.</p>`;
     return;
   }
 
-  const palpites   = getPalpites();
-  const resultados = getResultados();
   let total = 0;
-  let detalhes = [];
+  const detalhes = [];
 
   COPA_DATA.jogos.forEach(j => {
-    const p = palpites[j.id];
-    const r = resultados[j.id];
+    const p   = _palpites[j.id];
+    const r   = _resultados[j.id];
     const pts = calcularPontos(p, r);
     if (r) {
       total += pts;
-      const vReal = vencedorDoResultado(r);
+      const vReal      = vencedorDoResultado(r);
       const nomeVReal  = vReal === "A" ? j.mandante : vReal === "B" ? j.visitante : "Empate";
       const nomePalpite = p?.vencedor === "A" ? j.mandante : p?.vencedor === "B" ? j.visitante : p?.vencedor === "E" ? "Empate" : "-";
       detalhes.push({ jogo: j, nomePalpite, nomeVReal, resultado: r, pts });
@@ -476,75 +411,21 @@ function renderPlacar() {
   `;
 }
 
-// ── Resultados (admin) ────────────────────────────────────────────
-function renderAdmin() {
-  const container = document.getElementById("admin-container");
-  if (!container) return;
-  const resultados = getResultados();
-
-  const porData = {};
-  COPA_DATA.jogos.forEach(j => {
-    if (!porData[j.data]) porData[j.data] = [];
-    porData[j.data].push(j);
-  });
-
-  const datas = Object.keys(porData).sort();
-
-  container.innerHTML = datas.map(data => {
-    const jogos = porData[data];
-    const cards = jogos.map(j => {
-      const r = resultados[j.id] || {};
-      return `
-        <div class="admin-jogo">
-          <span>${escudo(j.mandante, 24)} ${j.mandante} × ${j.visitante} ${escudo(j.visitante, 24)}</span>
-          <input type="number" min="0" max="20" id="am-${j.id}" value="${r.mandante ?? ""}" placeholder="0" class="gols-input">
-          <span>×</span>
-          <input type="number" min="0" max="20" id="av-${j.id}" value="${r.visitante ?? ""}" placeholder="0" class="gols-input">
-          <button onclick="salvarResultado(${j.id})" class="btn-salvar btn-admin">✓</button>
-        </div>
-      `;
-    }).join("");
-
-    return `
-      <div class="dia-secao">
-        <div class="dia-header">
-          <span class="dia-data">${formatarData(data)}</span>
-          <span class="dia-count">${jogos.length} jogo${jogos.length > 1 ? "s" : ""}</span>
-        </div>
-        <div class="admin-dia-jogos">
-          ${cards}
-        </div>
-      </div>
-    `;
-  }).join("");
-}
-
-function salvarResultado(jogoId) {
-  const m = document.getElementById(`am-${jogoId}`).value;
-  const v = document.getElementById(`av-${jogoId}`).value;
-  if (m === "" || v === "") return mostrarToast("Preencha os dois placares!");
-  saveResultado(jogoId, m, v);
-  mostrarToast("Resultado salvo!");
-}
-
-// ── Page: ranking diário (index) ─────────────────────────────────
+// ── Page: ranking ─────────────────────────────────────────────────
 function renderRankingDiario() {
   const container = document.getElementById("ranking-diario");
   if (!container) return;
 
-  const resultados   = getResultados();
-  const todosPalpites = getTodosPalpites();
-  const usuarios     = Object.keys(todosPalpites);
+  const usuarios = Object.keys(_todosPalpites);
 
-  if (usuarios.length === 0 || Object.keys(resultados).length === 0) {
+  if (usuarios.length === 0 || Object.keys(_resultados).length === 0) {
     container.innerHTML = `<p class="aviso">O ranking aparecerá assim que houver resultados registrados.</p>`;
     return;
   }
 
-  // Agrupar jogos com resultado por data
   const porData = {};
   COPA_DATA.jogos.forEach(j => {
-    if (resultados[j.id]) {
+    if (_resultados[j.id]) {
       if (!porData[j.data]) porData[j.data] = [];
       porData[j.data].push(j);
     }
@@ -556,19 +437,16 @@ function renderRankingDiario() {
     return;
   }
 
-  // Pontuação total acumulada
   const totalPorUsuario = {};
   usuarios.forEach(user => {
     totalPorUsuario[user] = 0;
     COPA_DATA.jogos.forEach(j => {
-      totalPorUsuario[user] += calcularPontos(todosPalpites[user]?.[j.id], resultados[j.id]);
+      totalPorUsuario[user] += calcularPontos(_todosPalpites[user]?.[j.id], _resultados[j.id]);
     });
   });
 
-  const medalhas = ["🥇", "🥈", "🥉"];
-
-  const totalOrdenado = Object.entries(totalPorUsuario)
-    .sort((a, b) => b[1] - a[1]);
+  const medalhas     = ["🥇", "🥈", "🥉"];
+  const totalOrdenado = Object.entries(totalPorUsuario).sort((a, b) => b[1] - a[1]);
 
   const totalHTML = `
     <div class="ranking-total">
@@ -584,10 +462,10 @@ function renderRankingDiario() {
   `;
 
   const diasHTML = datas.map(data => {
-    const jogos = porData[data];
+    const jogos     = porData[data];
     const scoresDia = usuarios.map(user => {
       let pts = 0;
-      jogos.forEach(j => { pts += calcularPontos(todosPalpites[user]?.[j.id], resultados[j.id]); });
+      jogos.forEach(j => { pts += calcularPontos(_todosPalpites[user]?.[j.id], _resultados[j.id]); });
       return { user, pts };
     }).sort((a, b) => b.pts - a.pts);
 
@@ -610,20 +488,82 @@ function renderRankingDiario() {
   container.innerHTML = totalHTML + `<div class="ranking-dias-grid">${diasHTML}</div>`;
 }
 
-// ── Admin – Códigos de acesso por dia ────────────────────────────
+// ── Admin: resultados ─────────────────────────────────────────────
+function renderAdmin() {
+  const container = document.getElementById("admin-container");
+  if (!container) return;
+
+  const porData = {};
+  COPA_DATA.jogos.forEach(j => {
+    if (!porData[j.data]) porData[j.data] = [];
+    porData[j.data].push(j);
+  });
+
+  container.innerHTML = Object.keys(porData).sort().map(data => {
+    const jogos = porData[data];
+    const cards = jogos.map(j => {
+      const r = _resultados[j.id] || {};
+      return `
+        <div class="admin-jogo">
+          <span>${escudo(j.mandante, 24)} ${j.mandante} × ${j.visitante} ${escudo(j.visitante, 24)}</span>
+          <input type="number" min="0" max="20" id="am-${j.id}" value="${r.mandante ?? ""}" placeholder="0" class="gols-input">
+          <span>×</span>
+          <input type="number" min="0" max="20" id="av-${j.id}" value="${r.visitante ?? ""}" placeholder="0" class="gols-input">
+          <button onclick="salvarResultado(${j.id})" class="btn-salvar btn-admin">✓</button>
+        </div>
+      `;
+    }).join("");
+
+    return `
+      <div class="dia-secao">
+        <div class="dia-header">
+          <span class="dia-data">${formatarData(data)}</span>
+          <span class="dia-count">${jogos.length} jogo${jogos.length > 1 ? "s" : ""}</span>
+        </div>
+        <div class="admin-dia-jogos">${cards}</div>
+      </div>
+    `;
+  }).join("");
+}
+
+async function salvarResultado(jogoId) {
+  const m = document.getElementById(`am-${jogoId}`).value;
+  const v = document.getElementById(`av-${jogoId}`).value;
+  if (m === "" || v === "") return mostrarToast("Preencha os dois placares!");
+
+  const result = await apiPost('/resultados', {
+    jogoId,
+    golsMandante: parseInt(m),
+    golsVisitante: parseInt(v)
+  });
+
+  if (!result) return;
+  if (result.erro) return mostrarToast(result.erro);
+
+  _resultados[jogoId] = { mandante: parseInt(m), visitante: parseInt(v) };
+  mostrarToast("Resultado salvo!");
+}
+
+// ── Admin: códigos de acesso ──────────────────────────────────────
 async function renderCodigosAdmin() {
   const container = document.getElementById("codigos-container");
   if (!container) return;
+
+  const codigos = await apiGet('/acessos/codigos');
+  if (!codigos) {
+    container.innerHTML = `<p class="aviso">Erro ao carregar códigos.</p>`;
+    return;
+  }
 
   const hoje = new Date().toISOString().slice(0, 10);
   const contagemPorData = {};
   COPA_DATA.jogos.forEach(j => {
     if (j.data >= hoje) contagemPorData[j.data] = (contagemPorData[j.data] || 0) + 1;
   });
-  const datas = Object.keys(contagemPorData).sort();
 
+  const datas = Object.keys(contagemPorData).sort();
   if (datas.length === 0) {
-    container.innerHTML = `<p class="aviso">Nenhum jogo futuro com código disponível.</p>`;
+    container.innerHTML = `<p class="aviso">Nenhum jogo futuro.</p>`;
     return;
   }
 
@@ -631,21 +571,13 @@ async function renderCodigosAdmin() {
     <div class="codigo-dia-row">
       <span class="codigo-dia-data">${formatarData(data)}</span>
       <span class="codigo-dia-jogos">${contagemPorData[data]} jogo${contagemPorData[data] > 1 ? "s" : ""}</span>
-      <span class="codigo-dia-rotacao">v${rotacaoDia(data)}</span>
-      <span class="codigo-dia-badge" id="cod-${data}">···</span>
-      <button class="btn-copiar" id="btn-copiar-${data}" onclick="copiarCodigo('${data}')">Copiar</button>
+      <span class="codigo-dia-badge">${codigos[data] || "---"}</span>
+      <button class="btn-copiar" id="btn-copiar-${data}" onclick="copiarCodigo('${data}', '${codigos[data]}')">Copiar</button>
     </div>
   `).join("");
-
-  for (const data of datas) {
-    const code = await gerarCodigoDia(data);
-    const el = document.getElementById(`cod-${data}`);
-    if (el) el.textContent = code;
-  }
 }
 
-async function copiarCodigo(data) {
-  const code = await gerarCodigoDia(data);
+async function copiarCodigo(data, code) {
   const texto = `Bolão Copa 2026 – Código do dia ${formatarData(data)}: *${code}*`;
   await navigator.clipboard.writeText(texto);
   const btn = document.getElementById(`btn-copiar-${data}`);
@@ -656,7 +588,7 @@ async function copiarCodigo(data) {
   }
 }
 
-// ── Utilities ──────────────────────────────────────────────────────
+// ── Utilities ─────────────────────────────────────────────────────
 function formatarData(iso) {
   const [y, m, d] = iso.split("-");
   return `${d}/${m}/${y}`;
@@ -675,13 +607,34 @@ function mostrarToast(msg) {
   toast._t = setTimeout(() => toast.classList.remove("show"), 2500);
 }
 
-// ── Init ───────────────────────────────────────────────────────────
-document.addEventListener("DOMContentLoaded", () => {
-  sincronizarUsuarioAtual();
+// ── Init ──────────────────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", async () => {
+  if (!verificarAuth()) return;
+
+  await carregarDados();
+
+  // Páginas não-admin: renderiza normalmente
   renderCopaDinamico();
   renderGrupos();
   renderRankingDiario();
   renderPalpites();
   renderPlacar();
-  renderAdmin();
+
+  // Página admin: controla visibilidade e renderiza
+  const adminMain = document.getElementById("admin-main");
+  const adminGate = document.getElementById("admin-gate");
+  if (adminMain) {
+    const usuario = getUsuario();
+    if (usuario?.is_admin) {
+      adminMain.style.display = "block";
+      renderNavUsuario(); // nav fica dentro de admin-main
+      await renderCodigosAdmin();
+      renderAdmin();
+    } else {
+      if (adminGate) adminGate.style.display = "flex";
+    }
+    return; // admin-main tem seu próprio nav
+  }
+
+  renderNavUsuario();
 });

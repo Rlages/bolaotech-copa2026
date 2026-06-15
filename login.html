@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrar – Bolão Copa 2026</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="body-login">
+
+  <div class="login-page">
+
+    <div class="login-logo">
+      <span class="nav-logo">⚽ BolãoTech</span>
+      <p class="login-sub">Copa do Mundo 2026</p>
+    </div>
+
+    <div class="login-card">
+      <div class="login-tabs">
+        <button class="login-tab ativo" id="tab-entrar"    onclick="mudarAba('login')">Entrar</button>
+        <button class="login-tab"        id="tab-cadastro" onclick="mudarAba('cadastro')">Cadastrar</button>
+      </div>
+
+      <!-- Formulário de Login -->
+      <div id="form-login">
+        <div class="form-grupo">
+          <label for="login-email">E-mail</label>
+          <input type="email" id="login-email" class="input-text" placeholder="seu@email.com"
+                 onkeydown="if(event.key==='Enter') fazerLogin()">
+        </div>
+        <div class="form-grupo">
+          <label for="login-senha">Senha</label>
+          <input type="password" id="login-senha" class="input-text" placeholder="••••••"
+                 onkeydown="if(event.key==='Enter') fazerLogin()">
+        </div>
+        <p id="login-erro" class="form-erro"></p>
+        <button class="btn btn-full" onclick="fazerLogin()">Entrar</button>
+      </div>
+
+      <!-- Formulário de Cadastro -->
+      <div id="form-cadastro" style="display:none">
+        <div class="form-grupo">
+          <label for="cad-nome">Nome / Apelido</label>
+          <input type="text" id="cad-nome" class="input-text" placeholder="Como você quer ser chamado"
+                 maxlength="30" onkeydown="if(event.key==='Enter') fazerCadastro()">
+        </div>
+        <div class="form-grupo">
+          <label for="cad-email">E-mail</label>
+          <input type="email" id="cad-email" class="input-text" placeholder="seu@email.com"
+                 onkeydown="if(event.key==='Enter') fazerCadastro()">
+        </div>
+        <div class="form-grupo">
+          <label for="cad-senha">Senha</label>
+          <input type="password" id="cad-senha" class="input-text" placeholder="Mínimo 6 caracteres"
+                 onkeydown="if(event.key==='Enter') fazerCadastro()">
+        </div>
+        <p id="cad-erro" class="form-erro"></p>
+        <button class="btn btn-full" onclick="fazerCadastro()">Criar Conta</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    // Redireciona se já logado
+    if (getToken()) window.location.href = 'index.html';
+
+    function mudarAba(aba) {
+      document.getElementById('tab-entrar').classList.toggle('ativo', aba === 'login');
+      document.getElementById('tab-cadastro').classList.toggle('ativo', aba === 'cadastro');
+      document.getElementById('form-login').style.display    = aba === 'login'    ? 'block' : 'none';
+      document.getElementById('form-cadastro').style.display = aba === 'cadastro' ? 'block' : 'none';
+    }
+
+    async function fazerLogin() {
+      const email = document.getElementById('login-email').value.trim();
+      const senha = document.getElementById('login-senha').value;
+      const erroEl = document.getElementById('login-erro');
+      erroEl.textContent = '';
+
+      if (!email || !senha) { erroEl.textContent = 'Preencha todos os campos.'; return; }
+
+      const btn = document.querySelector('#form-login .btn');
+      btn.disabled = true;
+      btn.textContent = 'Entrando…';
+
+      const res  = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, senha })
+      }).catch(() => null);
+
+      btn.disabled = false;
+      btn.textContent = 'Entrar';
+
+      if (!res) { erroEl.textContent = 'Erro de conexão com o servidor.'; return; }
+
+      const data = await res.json();
+      if (data.erro) { erroEl.textContent = data.erro; return; }
+
+      setToken(data.token);
+      setUsuario(data.usuario);
+      window.location.href = 'index.html';
+    }
+
+    async function fazerCadastro() {
+      const nome  = document.getElementById('cad-nome').value.trim();
+      const email = document.getElementById('cad-email').value.trim();
+      const senha = document.getElementById('cad-senha').value;
+      const erroEl = document.getElementById('cad-erro');
+      erroEl.textContent = '';
+
+      if (!nome || !email || !senha) { erroEl.textContent = 'Preencha todos os campos.'; return; }
+
+      const btn = document.querySelector('#form-cadastro .btn');
+      btn.disabled = true;
+      btn.textContent = 'Criando…';
+
+      const res  = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, email, senha })
+      }).catch(() => null);
+
+      btn.disabled = false;
+      btn.textContent = 'Criar Conta';
+
+      if (!res) { erroEl.textContent = 'Erro de conexão com o servidor.'; return; }
+
+      const data = await res.json();
+      if (data.erro) { erroEl.textContent = data.erro; return; }
+
+      setToken(data.token);
+      setUsuario(data.usuario);
+      window.location.href = 'index.html';
+    }
+  </script>
+</body>
+</html>
