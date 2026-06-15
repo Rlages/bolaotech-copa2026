@@ -1008,6 +1008,86 @@ tr.acerto-exato    td { background: rgba(0,180,80,.055); }
 tr.acerto-vencedor td { background: rgba(200,140,0,.055); }
 tr.errou           td { background: rgba(220,60,50,.055); }
 
+/* ── Ranking Diário ─────────────────────────────────────────────── */
+.ranking-total {
+  background: var(--branco);
+  border-radius: var(--radius);
+  box-shadow: var(--sombra);
+  overflow: hidden;
+  margin-bottom: 1.8rem;
+}
+
+.ranking-total-titulo {
+  background: var(--grad-verde);
+  color: var(--amarelo);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+  padding: .65rem 1.2rem;
+}
+
+.ranking-dias-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.2rem;
+}
+
+.ranking-dia {
+  background: var(--branco);
+  border-radius: var(--radius);
+  box-shadow: var(--sombra);
+  overflow: hidden;
+}
+
+.ranking-dia-header {
+  background: var(--grad-header);
+  color: var(--amarelo);
+  font-weight: 700;
+  font-size: .85rem;
+  letter-spacing: .5px;
+  padding: .55rem 1.1rem;
+}
+
+.ranking-lista { padding: .4rem 0; }
+
+.ranking-item {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .55rem 1.1rem;
+  border-bottom: 1px solid var(--cinza);
+  transition: background .15s;
+}
+
+.ranking-item:last-child { border-bottom: none; }
+.ranking-item:hover { background: var(--cinza); }
+
+.ranking-item.primeiro { background: rgba(255,215,0,.08); }
+.ranking-item.segundo  { background: rgba(192,192,192,.07); }
+.ranking-item.terceiro { background: rgba(205,127,50,.06); }
+
+.ranking-pos {
+  font-size: 1rem;
+  min-width: 28px;
+  text-align: center;
+}
+
+.ranking-nome {
+  flex: 1;
+  font-weight: 600;
+  font-size: .9rem;
+  color: var(--texto);
+  text-transform: capitalize;
+}
+
+.ranking-pts {
+  font-weight: 800;
+  font-size: .9rem;
+  color: var(--verde);
+  min-width: 50px;
+  text-align: right;
+}
+
 /* ── Placar ──────────────────────────────────────────────────────── */
 .placar-user {
   background: var(--grad-hero);

@@ -68,6 +68,26 @@ function savePalpite(jogoId, vencedor) {
   const p = getPalpites();
   p[jogoId] = { vencedor };
   localStorage.setItem("bolao_palpites", JSON.stringify(p));
+  const user = getUser();
+  if (user) {
+    const all = getTodosPalpites();
+    if (!all[user]) all[user] = {};
+    all[user][jogoId] = { vencedor };
+    localStorage.setItem("bolao_todos_palpites", JSON.stringify(all));
+  }
+}
+
+function getTodosPalpites() {
+  return JSON.parse(localStorage.getItem("bolao_todos_palpites") || "{}");
+}
+function sincronizarUsuarioAtual() {
+  const user = getUser();
+  if (!user) return;
+  const palpites = getPalpites();
+  if (Object.keys(palpites).length === 0) return;
+  const all = getTodosPalpites();
+  all[user] = { ...(all[user] || {}), ...palpites };
+  localStorage.setItem("bolao_todos_palpites", JSON.stringify(all));
 }
 
 function getResultados() {
@@ -400,6 +420,7 @@ function definirNome() {
   const nome = input.value.trim();
   if (!nome) return mostrarToast("Digite seu nome!");
   setUser(nome);
+  sincronizarUsuarioAtual();
   document.getElementById("nome-section").style.display = "none";
   document.getElementById("palpites-container").style.display = "flex";
   renderPalpites();
@@ -506,6 +527,89 @@ function salvarResultado(jogoId) {
   mostrarToast("Resultado salvo!");
 }
 
+// ── Page: ranking diário (index) ─────────────────────────────────
+function renderRankingDiario() {
+  const container = document.getElementById("ranking-diario");
+  if (!container) return;
+
+  const resultados   = getResultados();
+  const todosPalpites = getTodosPalpites();
+  const usuarios     = Object.keys(todosPalpites);
+
+  if (usuarios.length === 0 || Object.keys(resultados).length === 0) {
+    container.innerHTML = `<p class="aviso">O ranking aparecerá assim que houver resultados registrados.</p>`;
+    return;
+  }
+
+  // Agrupar jogos com resultado por data
+  const porData = {};
+  COPA_DATA.jogos.forEach(j => {
+    if (resultados[j.id]) {
+      if (!porData[j.data]) porData[j.data] = [];
+      porData[j.data].push(j);
+    }
+  });
+
+  const datas = Object.keys(porData).sort().reverse();
+  if (datas.length === 0) {
+    container.innerHTML = `<p class="aviso">O ranking aparecerá quando o primeiro jogo tiver resultado.</p>`;
+    return;
+  }
+
+  // Pontuação total acumulada
+  const totalPorUsuario = {};
+  usuarios.forEach(user => {
+    totalPorUsuario[user] = 0;
+    COPA_DATA.jogos.forEach(j => {
+      totalPorUsuario[user] += calcularPontos(todosPalpites[user]?.[j.id], resultados[j.id]);
+    });
+  });
+
+  const medalhas = ["🥇", "🥈", "🥉"];
+
+  const totalOrdenado = Object.entries(totalPorUsuario)
+    .sort((a, b) => b[1] - a[1]);
+
+  const totalHTML = `
+    <div class="ranking-total">
+      <div class="ranking-total-titulo">Classificação Geral</div>
+      ${totalOrdenado.map(([user, pts], i) => `
+        <div class="ranking-item ${i < 3 ? ["primeiro","segundo","terceiro"][i] : ""}">
+          <span class="ranking-pos">${medalhas[i] || `${i + 1}º`}</span>
+          <span class="ranking-nome">${user}</span>
+          <span class="ranking-pts">${pts} pt${pts !== 1 ? "s" : ""}</span>
+        </div>
+      `).join("")}
+    </div>
+  `;
+
+  const diasHTML = datas.map(data => {
+    const jogos = porData[data];
+    const scoresDia = usuarios.map(user => {
+      let pts = 0;
+      jogos.forEach(j => { pts += calcularPontos(todosPalpites[user]?.[j.id], resultados[j.id]); });
+      return { user, pts };
+    }).sort((a, b) => b.pts - a.pts);
+
+    return `
+      <div class="ranking-dia">
+        <div class="ranking-dia-header">${formatarData(data)}</div>
+        <div class="ranking-lista">
+          ${scoresDia.map((s, i) => `
+            <div class="ranking-item ${i < 3 ? ["primeiro","segundo","terceiro"][i] : ""}">
+              <span class="ranking-pos">${medalhas[i] || `${i + 1}º`}</span>
+              <span class="ranking-nome">${s.user}</span>
+              <span class="ranking-pts">${s.pts} pt${s.pts !== 1 ? "s" : ""}</span>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  container.innerHTML = totalHTML + `<div class="ranking-dias-grid">${diasHTML}</div>`;
+}
+
 // ── Admin – Códigos de acesso por dia ────────────────────────────
 async function renderCodigosAdmin() {
   const container = document.getElementById("codigos-container");
@@ -573,8 +677,10 @@ function mostrarToast(msg) {
 
 // ── Init ───────────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
+  sincronizarUsuarioAtual();
   renderCopaDinamico();
   renderGrupos();
+  renderRankingDiario();
   renderPalpites();
   renderPlacar();
   renderAdmin();
