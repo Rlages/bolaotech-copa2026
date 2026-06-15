@@ -46,7 +46,20 @@
       <div style="display:flex; justify-content:flex-end; margin-bottom:1rem;">
         <button class="btn-sair-admin" onclick="sairAdmin()">Sair</button>
       </div>
-      <div id="admin-container"></div>
+
+      <!-- Códigos de acesso por dia -->
+      <div class="admin-codigos-secao">
+        <h2 class="admin-codigos-titulo">Códigos de Acesso por Dia</h2>
+        <p class="admin-codigos-desc">Envie o código do dia para quem pagou a entrada. O código muda a cada dia automaticamente.</p>
+        <div id="codigos-container"></div>
+      </div>
+
+      <!-- Registrar resultados -->
+      <div class="admin-codigos-secao">
+        <h2 class="admin-codigos-titulo">Registrar Resultados</h2>
+        <p class="admin-codigos-desc">Insira o placar real de cada jogo para calcular a pontuação dos participantes.</p>
+        <div id="admin-container"></div>
+      </div>
     </main>
 
     <footer>
@@ -59,11 +72,6 @@
   <script src="js/app.js"></script>
   <script>
     const ADMIN_HASH = "e4e5476ddec9c7222907d9fab010a9f54ffb4f75eaf5d691f51edcc3cc4bab64";
-
-    async function sha256(str) {
-      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
-      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
-    }
 
     async function verificarSenha() {
       const input = document.getElementById("gate-senha").value;
@@ -81,6 +89,7 @@
     function mostrarAdmin() {
       document.getElementById("admin-gate").style.display = "none";
       document.getElementById("admin-main").style.display = "block";
+      renderCodigosAdmin();
       renderAdmin();
     }
 

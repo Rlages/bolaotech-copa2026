@@ -79,6 +79,46 @@ function saveResultado(jogoId, mandanteGols, visitanteGols) {
   localStorage.setItem("bolao_resultados", JSON.stringify(r));
 }
 
+// ── Códigos de acesso diário ──────────────────────────────────────
+const BOLAO_CODE_SECRET = "bolaotech2026";
+
+async function sha256(str) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function gerarCodigoDia(data) {
+  const hash = await sha256(data + BOLAO_CODE_SECRET);
+  return hash.slice(0, 6).toUpperCase();
+}
+
+function getAcessosDia() {
+  return JSON.parse(localStorage.getItem("bolao_acessos") || "{}");
+}
+function setAcessoDia(data) {
+  const acc = getAcessosDia();
+  acc[data] = true;
+  localStorage.setItem("bolao_acessos", JSON.stringify(acc));
+}
+function temAcessoDia(data) {
+  return !!getAcessosDia()[data];
+}
+
+async function desbloquearDia(data) {
+  const inputEl  = document.getElementById(`codigo-${data}`);
+  const erroEl   = document.getElementById(`codigo-erro-${data}`);
+  const input    = inputEl.value.trim().toUpperCase();
+  const expected = await gerarCodigoDia(data);
+  if (input === expected) {
+    setAcessoDia(data);
+    renderPalpites();
+  } else {
+    erroEl.style.display = "block";
+    inputEl.value = "";
+    inputEl.focus();
+  }
+}
+
 // ── Seleção temporária antes de salvar ────────────────────────────
 const _selecoes = {};
 
@@ -252,74 +292,92 @@ function renderPalpites() {
   const datas = Object.keys(porData).sort();
 
   container.innerHTML = datas.map(data => {
-    const jogos = porData[data];
-    const cards = jogos.map(j => {
-      const p = palpites[j.id] || {};
-      const r = resultados[j.id];
-      const pts = calcularPontos(p, r);
-      const temPalpite   = !!p.vencedor;
-      const temResultado = !!r;
+    const jogos  = porData[data];
+    const acesso = temAcessoDia(data);
 
-      let badge = "";
-      if (temResultado && temPalpite) {
-        badge = pts >= 1
-          ? `<span class="badge acerto-vencedor">+${pts} pt</span>`
-          : `<span class="badge errou">0 pts</span>`;
-      }
+    let secaoConteudo;
+    if (acesso) {
+      const cards = jogos.map(j => {
+        const p = palpites[j.id] || {};
+        const r = resultados[j.id];
+        const pts = calcularPontos(p, r);
+        const temPalpite   = !!p.vencedor;
+        const temResultado = !!r;
 
-      const vReal = temResultado ? vencedorDoResultado(r) : null;
+        let badge = "";
+        if (temResultado && temPalpite) {
+          badge = pts >= 1
+            ? `<span class="badge acerto-vencedor">+${pts} pt</span>`
+            : `<span class="badge errou">0 pts</span>`;
+        }
 
-      return `
-        <div class="palpite-card ${temResultado ? "encerrado" : ""}">
-          <div class="palpite-header">
-            <span class="grupo-tag">Grupo ${j.grupo}</span>
-            ${badge}
+        const vReal = temResultado ? vencedorDoResultado(r) : null;
+
+        return `
+          <div class="palpite-card ${temResultado ? "encerrado" : ""}">
+            <div class="palpite-header">
+              <span class="grupo-tag">Grupo ${j.grupo}</span>
+              ${badge}
+            </div>
+            <div class="palpite-jogo">
+              <button
+                class="btn-time ${p.vencedor === 'A' ? 'ativo' : ''}"
+                data-jogo="${j.id}" data-opcao="A"
+                onclick="escolherVencedor(${j.id}, 'A')"
+                ${temResultado ? "disabled" : ""}>
+                ${escudo(j.mandante)}
+                <span class="btn-time-nome">${j.mandante}</span>
+              </button>
+              <button
+                class="btn-empate ${p.vencedor === 'E' ? 'ativo' : ''}"
+                data-jogo="${j.id}" data-opcao="E"
+                onclick="escolherVencedor(${j.id}, 'E')"
+                ${temResultado ? "disabled" : ""}>
+                <span class="btn-empate-icon">=</span>
+                <span>Empate</span>
+              </button>
+              <button
+                class="btn-time ${p.vencedor === 'B' ? 'ativo' : ''}"
+                data-jogo="${j.id}" data-opcao="B"
+                onclick="escolherVencedor(${j.id}, 'B')"
+                ${temResultado ? "disabled" : ""}>
+                ${escudo(j.visitante)}
+                <span class="btn-time-nome">${j.visitante}</span>
+              </button>
+            </div>
+            ${temResultado
+              ? `<div class="resultado-real">
+                   Resultado: ${r.mandante} × ${r.visitante}
+                   · <strong>${vReal === "E" ? "Empate" : vReal === "A" ? j.mandante + " venceu" : j.visitante + " venceu"}</strong>
+                 </div>`
+              : `<button onclick="salvarPalpite(${j.id})" class="btn-salvar">Salvar palpite</button>`}
           </div>
-          <div class="palpite-jogo">
-            <button
-              class="btn-time ${p.vencedor === 'A' ? 'ativo' : ''}"
-              data-jogo="${j.id}" data-opcao="A"
-              onclick="escolherVencedor(${j.id}, 'A')"
-              ${temResultado ? "disabled" : ""}>
-              ${escudo(j.mandante)}
-              <span class="btn-time-nome">${j.mandante}</span>
-            </button>
-            <button
-              class="btn-empate ${p.vencedor === 'E' ? 'ativo' : ''}"
-              data-jogo="${j.id}" data-opcao="E"
-              onclick="escolherVencedor(${j.id}, 'E')"
-              ${temResultado ? "disabled" : ""}>
-              <span class="btn-empate-icon">=</span>
-              <span>Empate</span>
-            </button>
-            <button
-              class="btn-time ${p.vencedor === 'B' ? 'ativo' : ''}"
-              data-jogo="${j.id}" data-opcao="B"
-              onclick="escolherVencedor(${j.id}, 'B')"
-              ${temResultado ? "disabled" : ""}>
-              ${escudo(j.visitante)}
-              <span class="btn-time-nome">${j.visitante}</span>
-            </button>
+        `;
+      }).join("");
+      secaoConteudo = `<div class="dia-jogos">${cards}</div>`;
+    } else {
+      secaoConteudo = `
+        <div class="dia-bloqueado">
+          <div class="bloqueio-icone">🔒</div>
+          <p class="bloqueio-texto">Pague a entrada e insira o código do dia para palpitar</p>
+          <div class="bloqueio-form">
+            <input type="text" id="codigo-${data}" class="input-text bloqueio-input"
+                   placeholder="Código..." maxlength="6"
+                   onkeydown="if(event.key==='Enter') desbloquearDia('${data}')">
+            <button class="btn" onclick="desbloquearDia('${data}')">Entrar</button>
           </div>
-          ${temResultado
-            ? `<div class="resultado-real">
-                 Resultado: ${r.mandante} × ${r.visitante}
-                 · <strong>${vReal === "E" ? "Empate" : vReal === "A" ? j.mandante + " venceu" : j.visitante + " venceu"}</strong>
-               </div>`
-            : `<button onclick="salvarPalpite(${j.id})" class="btn-salvar">Salvar palpite</button>`}
+          <p id="codigo-erro-${data}" class="bloqueio-erro">Código incorreto. Tente novamente.</p>
         </div>
       `;
-    }).join("");
+    }
 
     return `
       <div class="dia-secao">
         <div class="dia-header">
           <span class="dia-data">${formatarData(data)}</span>
-          <span class="dia-count">${jogos.length} jogo${jogos.length > 1 ? "s" : ""}</span>
+          <span class="dia-count">${jogos.length} jogo${jogos.length > 1 ? "s" : ""}${acesso ? "" : " 🔒"}</span>
         </div>
-        <div class="dia-jogos">
-          ${cards}
-        </div>
+        ${secaoConteudo}
       </div>
     `;
   }).join("");
@@ -442,6 +500,51 @@ function salvarResultado(jogoId) {
   if (m === "" || v === "") return mostrarToast("Preencha os dois placares!");
   saveResultado(jogoId, m, v);
   mostrarToast("Resultado salvo!");
+}
+
+// ── Admin – Códigos de acesso por dia ────────────────────────────
+async function renderCodigosAdmin() {
+  const container = document.getElementById("codigos-container");
+  if (!container) return;
+
+  const hoje = new Date().toISOString().slice(0, 10);
+  const contagemPorData = {};
+  COPA_DATA.jogos.forEach(j => {
+    if (j.data >= hoje) contagemPorData[j.data] = (contagemPorData[j.data] || 0) + 1;
+  });
+  const datas = Object.keys(contagemPorData).sort();
+
+  if (datas.length === 0) {
+    container.innerHTML = `<p class="aviso">Nenhum jogo futuro com código disponível.</p>`;
+    return;
+  }
+
+  container.innerHTML = datas.map(data => `
+    <div class="codigo-dia-row">
+      <span class="codigo-dia-data">${formatarData(data)}</span>
+      <span class="codigo-dia-jogos">${contagemPorData[data]} jogo${contagemPorData[data] > 1 ? "s" : ""}</span>
+      <span class="codigo-dia-badge" id="cod-${data}">···</span>
+      <button class="btn-copiar" id="btn-copiar-${data}" onclick="copiarCodigo('${data}')">Copiar</button>
+    </div>
+  `).join("");
+
+  for (const data of datas) {
+    const code = await gerarCodigoDia(data);
+    const el = document.getElementById(`cod-${data}`);
+    if (el) el.textContent = code;
+  }
+}
+
+async function copiarCodigo(data) {
+  const code = await gerarCodigoDia(data);
+  const texto = `Bolão Copa 2026 – Código do dia ${formatarData(data)}: *${code}*`;
+  await navigator.clipboard.writeText(texto);
+  const btn = document.getElementById(`btn-copiar-${data}`);
+  if (btn) {
+    btn.textContent = "Copiado!";
+    btn.classList.add("copiado");
+    setTimeout(() => { btn.textContent = "Copiar"; btn.classList.remove("copiado"); }, 2000);
+  }
 }
 
 // ── Utilities ──────────────────────────────────────────────────────

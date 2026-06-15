@@ -1078,6 +1078,123 @@ tr.errou           td { background: rgba(220,60,50,.055); }
 .placar-tabela tr:last-child td { border: none; }
 .placar-tabela tbody tr:hover td { background: rgba(0,102,51,.03); }
 
+/* ── Dia bloqueado (código de acesso) ───────────────────────────── */
+.dia-bloqueado {
+  background: var(--branco);
+  border-radius: var(--radius);
+  box-shadow: var(--sombra);
+  padding: 2.2rem 1.5rem;
+  text-align: center;
+  border: 2px dashed var(--cinza2);
+}
+
+.bloqueio-icone { font-size: 2.2rem; margin-bottom: .5rem; }
+
+.bloqueio-texto {
+  color: var(--cinza3);
+  font-size: .88rem;
+  margin-bottom: 1.1rem;
+}
+
+.bloqueio-form {
+  display: flex;
+  gap: .6rem;
+  justify-content: center;
+  margin-bottom: .6rem;
+}
+
+.bloqueio-input {
+  width: 150px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.bloqueio-erro {
+  color: #ff6b6b;
+  font-size: .8rem;
+  display: none;
+}
+
+/* ── Admin – Códigos de acesso ──────────────────────────────────── */
+.admin-codigos-secao {
+  margin-bottom: 2.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 2px solid var(--cinza2);
+}
+
+.admin-codigos-titulo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  color: var(--verde);
+  letter-spacing: 1px;
+  margin-bottom: .25rem;
+}
+
+.admin-codigos-desc {
+  color: var(--cinza3);
+  font-size: .84rem;
+  margin-bottom: 1.2rem;
+}
+
+#codigos-container {
+  display: flex;
+  flex-direction: column;
+  gap: .65rem;
+}
+
+.codigo-dia-row {
+  background: var(--branco);
+  border-radius: 12px;
+  box-shadow: var(--sombra);
+  padding: .85rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.codigo-dia-data {
+  font-weight: 700;
+  color: var(--texto);
+  min-width: 88px;
+}
+
+.codigo-dia-jogos {
+  color: var(--cinza3);
+  font-size: .82rem;
+  flex: 1;
+}
+
+.codigo-dia-badge {
+  background: var(--grad-verde);
+  color: var(--amarelo);
+  font-family: 'Bebas Neue', monospace;
+  font-size: 1.15rem;
+  letter-spacing: 4px;
+  padding: .3rem 1rem;
+  border-radius: 8px;
+  min-width: 96px;
+  text-align: center;
+}
+
+.btn-copiar {
+  background: transparent;
+  border: 1px solid var(--cinza2);
+  color: var(--cinza3);
+  padding: .32rem .85rem;
+  border-radius: 8px;
+  font-size: .78rem;
+  cursor: pointer;
+  transition: all .2s;
+  white-space: nowrap;
+}
+
+.btn-copiar:hover  { border-color: var(--verde); color: var(--verde); }
+.btn-copiar.copiado { border-color: var(--verde); color: var(--verde); }
+
 /* ── Admin Gate (tela de senha) ─────────────────────────────────── */
 #admin-gate {
   position: fixed;
