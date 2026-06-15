@@ -25,15 +25,112 @@
   </div>
 
   <main>
+
+    <!-- ── Como Funciona ────────────────────────────────────────────── -->
     <section class="section">
-      <h2 class="section-title">Próximos Jogos</h2>
-      <div id="proximos-jogos"></div>
+      <h2 class="section-title">Como Funciona o Bolão</h2>
+      <div class="passos">
+        <div class="passo-card">
+          <div class="passo-circulo">1</div>
+          <div class="passo-icon">👤</div>
+          <h3 class="passo-titulo">Cadastre-se</h3>
+          <p class="passo-desc">Acesse <strong>Palpites</strong>, digite seu apelido e entre no jogo.</p>
+        </div>
+        <div class="passo-seta">›</div>
+        <div class="passo-card">
+          <div class="passo-circulo">2</div>
+          <div class="passo-icon">⚽</div>
+          <h3 class="passo-titulo">Aposte no Vencedor</h3>
+          <p class="passo-desc">Para cada jogo, clique no time que você acha que vai ganhar.</p>
+        </div>
+        <div class="passo-seta">›</div>
+        <div class="passo-card">
+          <div class="passo-circulo">3</div>
+          <div class="passo-icon">🏆</div>
+          <h3 class="passo-titulo">Acumule Pontos</h3>
+          <p class="passo-desc">Cada acerto vale <strong>1 ponto</strong>. Mais pontos no fim = campeão do bolão!</p>
+        </div>
+      </div>
+      <div class="regra-destaque">
+        <span>⚡ Acertou o vencedor → <strong>+1 ponto</strong></span>
+        <span class="regra-sep">·</span>
+        <span>Empates <strong>não</strong> pontuam</span>
+        <span class="regra-sep">·</span>
+        <span>📅 Aposte antes do jogo começar</span>
+      </div>
     </section>
 
+    <!-- ── Copa 2026 ao Vivo ─────────────────────────────────────────── -->
+    <section class="section">
+      <h2 class="section-title">Copa do Mundo 2026</h2>
+
+      <div class="copa-numeros">
+        <div class="copa-num-card">
+          <span class="copa-num-valor">48</span>
+          <span class="copa-num-label">Seleções</span>
+        </div>
+        <div class="copa-num-card">
+          <span class="copa-num-valor">12</span>
+          <span class="copa-num-label">Grupos</span>
+        </div>
+        <div class="copa-num-card">
+          <span class="copa-num-valor">104</span>
+          <span class="copa-num-label">Jogos no Total</span>
+        </div>
+        <div class="copa-num-card">
+          <span class="copa-num-valor">3</span>
+          <span class="copa-num-label">Países-Sede</span>
+        </div>
+        <div class="copa-num-card">
+          <span class="copa-num-valor">16</span>
+          <span class="copa-num-label">Estádios</span>
+        </div>
+      </div>
+
+      <!-- Jogos de hoje / próximo jogo — preenchido via JS -->
+      <div id="copa-dinamico"></div>
+
+      <!-- Curiosidades -->
+      <div class="curiosidades-grid">
+        <div class="curiosidade-card">
+          <div class="cur-icon">🌎</div>
+          <h4>3 Países-Sede</h4>
+          <p>Pela primeira vez o Mundial é sediado por <strong>3 nações ao mesmo tempo</strong>: EUA, Canadá e México, formando a maior Copa em extensão geográfica.</p>
+        </div>
+        <div class="curiosidade-card">
+          <div class="cur-icon">📈</div>
+          <h4>Copa Histórica</h4>
+          <p>Com <strong>48 seleções</strong> — 16 a mais que em 2022 — e 104 jogos, é a Copa mais longa e com mais nações representadas de todos os tempos.</p>
+        </div>
+        <div class="curiosidade-card">
+          <div class="cur-icon">🏟️</div>
+          <h4>16 Estádios</h4>
+          <p>As partidas acontecem em arenas icônicas como o <strong>MetLife Stadium</strong> (Nova York), <strong>Azteca</strong> (Cidade do México) e <strong>BC Place</strong> (Vancouver).</p>
+        </div>
+        <div class="curiosidade-card">
+          <div class="cur-icon">🇲🇽</div>
+          <h4>México, 3× Sede</h4>
+          <p>O México se torna o <strong>único país a sediar três Copas</strong> (1970, 1986 e 2026), superando o Brasil e a Itália que sediaram duas vezes cada.</p>
+        </div>
+        <div class="curiosidade-card">
+          <div class="cur-icon">⚖️</div>
+          <h4>Novo Formato</h4>
+          <p>São <strong>12 grupos de 4 times</strong>. Avançam os 2 primeiros de cada grupo + os <strong>8 melhores terceiros colocados</strong> — totalizando 32 times nas oitavas.</p>
+        </div>
+        <div class="curiosidade-card">
+          <div class="cur-icon">💰</div>
+          <h4>Maior Premiação</h4>
+          <p>A FIFA vai distribuir mais de <strong>$1 bilhão de dólares</strong> entre os participantes — o maior valor da história das Copas do Mundo.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Grupos ─────────────────────────────────────────────────────── -->
     <section class="section">
       <h2 class="section-title">Grupos</h2>
       <div id="grupos-container"></div>
     </section>
+
   </main>
 
   <footer>

@@ -208,6 +208,346 @@ nav {
   border-radius: 1px;
 }
 
+/* ── Como Funciona ───────────────────────────────────────────────── */
+.passos {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin-bottom: 1.25rem;
+}
+
+.passo-card {
+  flex: 1;
+  background: var(--branco);
+  border-radius: var(--radius);
+  box-shadow: var(--sombra);
+  padding: 1.75rem 1.25rem 1.5rem;
+  text-align: center;
+  border: 1px solid rgba(0,0,0,.05);
+  position: relative;
+}
+
+.passo-circulo {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 28px;
+  background: var(--grad-verde);
+  color: var(--amarelo);
+  font-weight: 900;
+  font-size: .8rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,102,51,.3);
+}
+
+.passo-icon {
+  font-size: 2.25rem;
+  margin-bottom: .75rem;
+  line-height: 1;
+}
+
+.passo-titulo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 400;
+  color: var(--verde);
+  letter-spacing: 1px;
+  margin-bottom: .45rem;
+}
+
+.passo-desc {
+  font-size: .84rem;
+  color: var(--cinza3);
+  line-height: 1.55;
+}
+
+.passo-desc strong { color: var(--texto); }
+
+.passo-seta {
+  font-size: 2rem;
+  color: var(--cinza3);
+  flex-shrink: 0;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.regra-destaque {
+  background: linear-gradient(135deg, var(--verde3), #002244);
+  color: rgba(255,255,255,.85);
+  border-radius: var(--radius);
+  padding: .9rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-wrap: wrap;
+  font-size: .85rem;
+  justify-content: center;
+}
+
+.regra-destaque strong { color: var(--amarelo); }
+.regra-sep { color: rgba(255,255,255,.3); font-size: 1.2rem; }
+
+/* ── Copa em números ─────────────────────────────────────────────── */
+.copa-numeros {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.copa-num-card {
+  flex: 1;
+  min-width: 100px;
+  background: var(--branco);
+  border-radius: var(--radius);
+  box-shadow: var(--sombra);
+  padding: 1.25rem .75rem;
+  text-align: center;
+  border-top: 3px solid var(--amarelo);
+}
+
+.copa-num-valor {
+  display: block;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.4rem;
+  font-weight: 400;
+  color: var(--verde);
+  line-height: 1;
+  letter-spacing: 1px;
+}
+
+.copa-num-label {
+  display: block;
+  font-size: .74rem;
+  font-weight: 600;
+  color: var(--cinza3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: .25rem;
+}
+
+/* ── Jogos de hoje ───────────────────────────────────────────────── */
+.hoje-box {
+  background: var(--branco);
+  border-radius: var(--radius);
+  box-shadow: var(--sombra);
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+  border: 1px solid rgba(0,0,0,.05);
+}
+
+.hoje-header {
+  background: linear-gradient(135deg, #8b0000, #c0392b);
+  color: var(--branco);
+  padding: .7rem 1.25rem;
+  font-weight: 700;
+  font-size: .88rem;
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  letter-spacing: .3px;
+}
+
+.ao-vivo-badge {
+  background: rgba(255,255,255,.2);
+  border-radius: 20px;
+  padding: .1rem .55rem;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  animation: pulse-badge 1.5s infinite;
+}
+
+@keyframes pulse-badge {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: .55; }
+}
+
+.hoje-lista { padding: .5rem 0; }
+
+.hoje-jogo {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .65rem 1.25rem;
+  border-bottom: 1px solid var(--cinza2);
+  font-size: .88rem;
+}
+
+.hoje-jogo:last-child { border: none; }
+
+.hoje-time {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  font-weight: 700;
+  flex: 1;
+}
+
+.hoje-time-b { justify-content: flex-end; }
+
+.hoje-placar-box {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--verde);
+  min-width: 60px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .3rem;
+}
+
+.hoje-x { color: var(--cinza3); font-weight: 400; }
+
+.hoje-grupo-tag {
+  background: var(--cinza2);
+  color: var(--cinza3);
+  border-radius: 6px;
+  padding: .1rem .45rem;
+  font-size: .7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ── Próximo jogo ────────────────────────────────────────────────── */
+.proximo-box {
+  background: var(--branco);
+  border-radius: var(--radius);
+  box-shadow: var(--sombra);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+  text-align: center;
+  border: 1px solid rgba(0,0,0,.05);
+}
+
+.proximo-label {
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--cinza3);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: .75rem;
+}
+
+.proximo-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .75rem;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: .5rem;
+  flex-wrap: wrap;
+}
+
+.proximo-time-nome { color: var(--texto); }
+
+.proximo-vs {
+  color: var(--cinza3);
+  font-size: 1.1rem;
+  font-weight: 400;
+}
+
+.proximo-data-info {
+  font-size: .8rem;
+  color: var(--cinza3);
+  font-weight: 500;
+}
+
+/* ── Barra de progresso ──────────────────────────────────────────── */
+.progresso-box {
+  background: var(--branco);
+  border-radius: var(--radius);
+  box-shadow: var(--sombra);
+  padding: 1rem 1.4rem;
+  margin-bottom: 1.75rem;
+  border: 1px solid rgba(0,0,0,.05);
+}
+
+.progresso-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--cinza3);
+  margin-bottom: .55rem;
+}
+
+.progresso-info strong { color: var(--verde); }
+
+.progresso-barra {
+  height: 8px;
+  background: var(--cinza2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progresso-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--verde), var(--amarelo));
+  border-radius: 4px;
+  transition: width .6s ease;
+}
+
+.copa-encerrada {
+  text-align: center;
+  padding: 1.25rem;
+  font-weight: 700;
+  color: var(--verde);
+  font-size: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+/* ── Curiosidades ────────────────────────────────────────────────── */
+.curiosidades-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.curiosidade-card {
+  background: var(--branco);
+  border-radius: var(--radius);
+  box-shadow: var(--sombra);
+  padding: 1.4rem 1.25rem;
+  border: 1px solid rgba(0,0,0,.05);
+  transition: transform .2s, box-shadow .2s;
+}
+
+.curiosidade-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sombra2);
+}
+
+.cur-icon {
+  font-size: 1.8rem;
+  margin-bottom: .65rem;
+  line-height: 1;
+}
+
+.curiosidade-card h4 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: var(--verde);
+  letter-spacing: 1px;
+  margin-bottom: .5rem;
+}
+
+.curiosidade-card p {
+  font-size: .84rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+.curiosidade-card p strong { color: var(--texto); }
+
 /* ── Grupos ──────────────────────────────────────────────────────── */
 #grupos-container {
   display: grid;
@@ -815,4 +1155,11 @@ footer {
   .placar-user { flex-direction: column; gap: .5rem; text-align: center; padding: 1.5rem; }
   .placar-user::before { display: none; }
   .section { margin: 2rem auto; }
+  .passos { flex-direction: column; }
+  .passo-seta { transform: rotate(90deg); }
+  .copa-numeros { gap: .6rem; }
+  .copa-num-card { min-width: calc(50% - .6rem); }
+  .regra-destaque { gap: .5rem; font-size: .8rem; }
+  .regra-sep { display: none; }
+  .hoje-jogo { font-size: .8rem; gap: .5rem; }
 }

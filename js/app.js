@@ -104,6 +104,87 @@ function calcularPontos(palpite, resultado) {
   return palpite.vencedor === real ? COPA_DATA.regras.acertoVencedor : 0;
 }
 
+// ── Page: index – Copa dinâmica ──────────────────────────────────
+function renderCopaDinamico() {
+  const container = document.getElementById("copa-dinamico");
+  if (!container) return;
+
+  const hoje = new Date().toISOString().slice(0, 10);
+  const resultados = getResultados();
+  const jogosHoje = COPA_DATA.jogos.filter(j => j.data === hoje);
+  const proximoJogo = COPA_DATA.jogos.find(j => j.data > hoje);
+  const jogosFuturos = COPA_DATA.jogos.filter(j => j.data > hoje);
+
+  let html = "";
+
+  if (jogosHoje.length > 0) {
+    html += `
+      <div class="hoje-box">
+        <div class="hoje-header">
+          <span class="ao-vivo-badge">🔴 AO VIVO</span>
+          Jogos de Hoje — ${formatarData(hoje)}
+        </div>
+        <div class="hoje-lista">
+          ${jogosHoje.map(j => {
+            const r = resultados[j.id];
+            return `
+              <div class="hoje-jogo">
+                <span class="hoje-time">${escudo(j.mandante, 28)} <span>${j.mandante}</span></span>
+                <span class="hoje-placar-box">
+                  ${r
+                    ? `<strong>${r.mandante}</strong> <span class="hoje-x">×</span> <strong>${r.visitante}</strong>`
+                    : `<span class="hoje-x">×</span>`}
+                </span>
+                <span class="hoje-time hoje-time-b"><span>${j.visitante}</span> ${escudo(j.visitante, 28)}</span>
+                <span class="hoje-grupo-tag">Gr. ${j.grupo}</span>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  if (proximoJogo && jogosHoje.length === 0) {
+    const diasRestantes = Math.ceil((new Date(proximoJogo.data) - new Date(hoje)) / 86400000);
+    html += `
+      <div class="proximo-box">
+        <div class="proximo-label">⏭ Próximo Jogo${diasRestantes === 1 ? " — Amanhã" : diasRestantes > 1 ? ` — em ${diasRestantes} dias` : ""}</div>
+        <div class="proximo-info">
+          ${escudo(proximoJogo.mandante, 36)}
+          <span class="proximo-time-nome">${proximoJogo.mandante}</span>
+          <span class="proximo-vs">×</span>
+          <span class="proximo-time-nome">${proximoJogo.visitante}</span>
+          ${escudo(proximoJogo.visitante, 36)}
+        </div>
+        <div class="proximo-data-info">📅 ${formatarData(proximoJogo.data)} · Grupo ${proximoJogo.grupo}</div>
+      </div>
+    `;
+  }
+
+  if (!proximoJogo && jogosHoje.length === 0) {
+    html = `<div class="copa-encerrada">🏆 A fase de grupos encerrou! Acompanhe o placar final.</div>`;
+  }
+
+  const totalJogos = COPA_DATA.jogos.length;
+  const jogosComResultado = Object.keys(resultados).length;
+  const progresso = Math.round((jogosComResultado / totalJogos) * 100);
+
+  html += `
+    <div class="progresso-box">
+      <div class="progresso-info">
+        <span>Fase de Grupos</span>
+        <span><strong>${jogosComResultado}</strong> de ${totalJogos} jogos encerrados</span>
+      </div>
+      <div class="progresso-barra">
+        <div class="progresso-fill" style="width:${progresso}%"></div>
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = html;
+}
+
 // ── Page: index ───────────────────────────────────────────────────
 function renderGrupos() {
   const container = document.getElementById("grupos-container");
@@ -324,8 +405,8 @@ function mostrarToast(msg) {
 
 // ── Init ───────────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
+  renderCopaDinamico();
   renderGrupos();
-  renderProximosJogos();
   renderPalpites();
   renderPlacar();
   renderAdmin();
