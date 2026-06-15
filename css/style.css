@@ -1080,6 +1080,12 @@ tr.errou           td { background: rgba(220,60,50,.055); }
 
 /* ── Admin ───────────────────────────────────────────────────────── */
 #admin-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.admin-dia-jogos {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
   gap: 1.1rem;

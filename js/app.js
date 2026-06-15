@@ -390,15 +390,39 @@ function renderAdmin() {
   const container = document.getElementById("admin-container");
   if (!container) return;
   const resultados = getResultados();
-  container.innerHTML = COPA_DATA.jogos.map(j => {
-    const r = resultados[j.id] || {};
+
+  const porData = {};
+  COPA_DATA.jogos.forEach(j => {
+    if (!porData[j.data]) porData[j.data] = [];
+    porData[j.data].push(j);
+  });
+
+  const datas = Object.keys(porData).sort();
+
+  container.innerHTML = datas.map(data => {
+    const jogos = porData[data];
+    const cards = jogos.map(j => {
+      const r = resultados[j.id] || {};
+      return `
+        <div class="admin-jogo">
+          <span>${escudo(j.mandante, 24)} ${j.mandante} × ${j.visitante} ${escudo(j.visitante, 24)}</span>
+          <input type="number" min="0" max="20" id="am-${j.id}" value="${r.mandante ?? ""}" placeholder="0" class="gols-input">
+          <span>×</span>
+          <input type="number" min="0" max="20" id="av-${j.id}" value="${r.visitante ?? ""}" placeholder="0" class="gols-input">
+          <button onclick="salvarResultado(${j.id})" class="btn-salvar btn-admin">✓</button>
+        </div>
+      `;
+    }).join("");
+
     return `
-      <div class="admin-jogo">
-        <span>${escudo(j.mandante, 24)} ${j.mandante} × ${j.visitante} ${escudo(j.visitante, 24)}</span>
-        <input type="number" min="0" max="20" id="am-${j.id}" value="${r.mandante ?? ""}" placeholder="0" class="gols-input">
-        <span>×</span>
-        <input type="number" min="0" max="20" id="av-${j.id}" value="${r.visitante ?? ""}" placeholder="0" class="gols-input">
-        <button onclick="salvarResultado(${j.id})" class="btn-salvar btn-admin">✓</button>
+      <div class="dia-secao">
+        <div class="dia-header">
+          <span class="dia-data">${formatarData(data)}</span>
+          <span class="dia-count">${jogos.length} jogo${jogos.length > 1 ? "s" : ""}</span>
+        </div>
+        <div class="admin-dia-jogos">
+          ${cards}
+        </div>
       </div>
     `;
   }).join("");
