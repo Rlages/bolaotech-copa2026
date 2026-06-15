@@ -98,25 +98,9 @@ const COPA_DATA = {
     },
   ],
 
-  // Fase de grupos – 72 jogos (3 rodadas × 12 grupos × 2 jogos)
+  // Fase de grupos – jogos a partir de 15/06/2026
   jogos: [
     // ── RODADA 1 ─────────────────────────────────────────────────────
-
-    // Grupo A – 11/06
-    { id:  1, grupo: "A", mandante: "México",           visitante: "África do Sul",   data: "2026-06-11" },
-    { id:  2, grupo: "A", mandante: "Coreia do Sul",    visitante: "República Tcheca",data: "2026-06-11" },
-
-    // Grupo B – 12/06
-    { id:  3, grupo: "B", mandante: "Canadá",           visitante: "Bósnia e Herz.",  data: "2026-06-12" },
-    { id:  4, grupo: "B", mandante: "Catar",            visitante: "Suíça",            data: "2026-06-12" },
-
-    // Grupo C – 13/06
-    { id:  5, grupo: "C", mandante: "Brasil",           visitante: "Marrocos",         data: "2026-06-13" },
-    { id:  6, grupo: "C", mandante: "Haiti",            visitante: "Escócia",          data: "2026-06-13" },
-
-    // Grupo D – 14/06
-    { id:  7, grupo: "D", mandante: "EUA",              visitante: "Paraguai",         data: "2026-06-14" },
-    { id:  8, grupo: "D", mandante: "Austrália",        visitante: "Turquia",          data: "2026-06-14" },
 
     // Grupo E – 15/06
     { id:  9, grupo: "E", mandante: "Alemanha",         visitante: "Curaçao",          data: "2026-06-15" },
@@ -258,10 +242,6 @@ const COPA_DATA = {
 
   // Incremente o número de um dia para invalidar o código antigo daquele dia
   codigoRotacoes: {
-    "2026-06-11": 0,
-    "2026-06-12": 0,
-    "2026-06-13": 0,
-    "2026-06-14": 0,
     "2026-06-15": 0,
     "2026-06-16": 0,
     "2026-06-17": 0,
