@@ -292,7 +292,8 @@ nav {
 .regra-destaque strong { color: var(--amarelo); }
 .regra-sep { color: rgba(255,255,255,.3); font-size: 1.2rem; }
 
-/* ── Copa em números ─────────────────────────────────────────────── */
+/* ─
+─ Copa em números ─────────────────────────────────────────────── */
 .copa-numeros {
   display: flex;
   gap: 1rem;
@@ -1166,6 +1167,15 @@ tr.errou           td { background: rgba(220,60,50,.055); }
   color: var(--cinza3);
   font-size: .82rem;
   flex: 1;
+}
+
+.codigo-dia-rotacao {
+  font-size: .72rem;
+  color: var(--cinza3);
+  background: var(--cinza);
+  border-radius: 6px;
+  padding: .15rem .5rem;
+  font-weight: 600;
 }
 
 .codigo-dia-badge {

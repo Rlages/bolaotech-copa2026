@@ -87,8 +87,12 @@ async function sha256(str) {
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
+function rotacaoDia(data) {
+  return (COPA_DATA.codigoRotacoes && COPA_DATA.codigoRotacoes[data]) || 0;
+}
+
 async function gerarCodigoDia(data) {
-  const hash = await sha256(data + BOLAO_CODE_SECRET);
+  const hash = await sha256(data + BOLAO_CODE_SECRET + rotacaoDia(data));
   return hash.slice(0, 6).toUpperCase();
 }
 
@@ -97,11 +101,11 @@ function getAcessosDia() {
 }
 function setAcessoDia(data) {
   const acc = getAcessosDia();
-  acc[data] = true;
+  acc[data] = rotacaoDia(data);
   localStorage.setItem("bolao_acessos", JSON.stringify(acc));
 }
 function temAcessoDia(data) {
-  return !!getAcessosDia()[data];
+  return getAcessosDia()[data] === rotacaoDia(data);
 }
 
 async function desbloquearDia(data) {
@@ -523,6 +527,7 @@ async function renderCodigosAdmin() {
     <div class="codigo-dia-row">
       <span class="codigo-dia-data">${formatarData(data)}</span>
       <span class="codigo-dia-jogos">${contagemPorData[data]} jogo${contagemPorData[data] > 1 ? "s" : ""}</span>
+      <span class="codigo-dia-rotacao">v${rotacaoDia(data)}</span>
       <span class="codigo-dia-badge" id="cod-${data}">···</span>
       <button class="btn-copiar" id="btn-copiar-${data}" onclick="copiarCodigo('${data}')">Copiar</button>
     </div>
