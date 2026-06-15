@@ -235,62 +235,83 @@ function renderPalpites() {
   const palpites   = getPalpites();
   const resultados = getResultados();
 
-  container.innerHTML = COPA_DATA.jogos.map(j => {
-    const p = palpites[j.id] || {};
-    const r = resultados[j.id];
-    const pts = calcularPontos(p, r);
-    const temPalpite  = !!p.vencedor;
-    const temResultado = !!r;
+  const porData = {};
+  COPA_DATA.jogos.forEach(j => {
+    if (!porData[j.data]) porData[j.data] = [];
+    porData[j.data].push(j);
+  });
 
-    let badge = "";
-    if (temResultado && temPalpite) {
-      badge = pts >= 1
-        ? `<span class="badge acerto-vencedor">+${pts} pt</span>`
-        : `<span class="badge errou">0 pts</span>`;
-    }
+  const datas = Object.keys(porData).sort();
 
-    const vReal = temResultado ? vencedorDoResultado(r) : null;
-    const nomeVencedorReal = vReal === "A" ? j.mandante : vReal === "B" ? j.visitante : null;
+  container.innerHTML = datas.map(data => {
+    const jogos = porData[data];
+    const cards = jogos.map(j => {
+      const p = palpites[j.id] || {};
+      const r = resultados[j.id];
+      const pts = calcularPontos(p, r);
+      const temPalpite   = !!p.vencedor;
+      const temResultado = !!r;
+
+      let badge = "";
+      if (temResultado && temPalpite) {
+        badge = pts >= 1
+          ? `<span class="badge acerto-vencedor">+${pts} pt</span>`
+          : `<span class="badge errou">0 pts</span>`;
+      }
+
+      const vReal = temResultado ? vencedorDoResultado(r) : null;
+
+      return `
+        <div class="palpite-card ${temResultado ? "encerrado" : ""}">
+          <div class="palpite-header">
+            <span class="grupo-tag">Grupo ${j.grupo}</span>
+            ${badge}
+          </div>
+          <div class="palpite-jogo">
+            <button
+              class="btn-time ${p.vencedor === 'A' ? 'ativo' : ''}"
+              data-jogo="${j.id}" data-opcao="A"
+              onclick="escolherVencedor(${j.id}, 'A')"
+              ${temResultado ? "disabled" : ""}>
+              ${escudo(j.mandante)}
+              <span class="btn-time-nome">${j.mandante}</span>
+            </button>
+            <button
+              class="btn-empate ${p.vencedor === 'E' ? 'ativo' : ''}"
+              data-jogo="${j.id}" data-opcao="E"
+              onclick="escolherVencedor(${j.id}, 'E')"
+              ${temResultado ? "disabled" : ""}>
+              <span class="btn-empate-icon">=</span>
+              <span>Empate</span>
+            </button>
+            <button
+              class="btn-time ${p.vencedor === 'B' ? 'ativo' : ''}"
+              data-jogo="${j.id}" data-opcao="B"
+              onclick="escolherVencedor(${j.id}, 'B')"
+              ${temResultado ? "disabled" : ""}>
+              ${escudo(j.visitante)}
+              <span class="btn-time-nome">${j.visitante}</span>
+            </button>
+          </div>
+          ${temResultado
+            ? `<div class="resultado-real">
+                 Resultado: ${r.mandante} × ${r.visitante}
+                 · <strong>${vReal === "E" ? "Empate" : vReal === "A" ? j.mandante + " venceu" : j.visitante + " venceu"}</strong>
+               </div>`
+            : `<button onclick="salvarPalpite(${j.id})" class="btn-salvar">Salvar palpite</button>`}
+        </div>
+      `;
+    }).join("");
 
     return `
-      <div class="palpite-card ${temResultado ? "encerrado" : ""}">
-        <div class="palpite-header">
-          <span class="grupo-tag">Grupo ${j.grupo}</span>
-          <span class="data-tag">${formatarData(j.data)}</span>
-          ${badge}
+      <div class="dia-secao">
+        <div class="dia-header">
+          <span class="dia-data">${formatarData(data)}</span>
+          <span class="dia-count">${jogos.length} jogo${jogos.length > 1 ? "s" : ""}</span>
         </div>
-        <div class="palpite-jogo">
-          <button
-            class="btn-time ${p.vencedor === 'A' ? 'ativo' : ''}"
-            data-jogo="${j.id}" data-opcao="A"
-            onclick="escolherVencedor(${j.id}, 'A')"
-            ${temResultado ? "disabled" : ""}>
-            ${escudo(j.mandante)}
-            <span class="btn-time-nome">${j.mandante}</span>
-          </button>
-          <button
-            class="btn-empate ${p.vencedor === 'E' ? 'ativo' : ''}"
-            data-jogo="${j.id}" data-opcao="E"
-            onclick="escolherVencedor(${j.id}, 'E')"
-            ${temResultado ? "disabled" : ""}>
-            <span class="btn-empate-icon">=</span>
-            <span>Empate</span>
-          </button>
-          <button
-            class="btn-time ${p.vencedor === 'B' ? 'ativo' : ''}"
-            data-jogo="${j.id}" data-opcao="B"
-            onclick="escolherVencedor(${j.id}, 'B')"
-            ${temResultado ? "disabled" : ""}>
-            ${escudo(j.visitante)}
-            <span class="btn-time-nome">${j.visitante}</span>
-          </button>
+        <div class="dia-jogos">
+          ${cards}
         </div>
-        ${temResultado
-          ? `<div class="resultado-real">
-               Resultado: ${r.mandante} × ${r.visitante}
-               · <strong>${vReal === "E" ? "Empate" : vReal === "A" ? j.mandante + " venceu" : j.visitante + " venceu"}</strong>
-             </div>`
-          : `<button onclick="salvarPalpite(${j.id})" class="btn-salvar">Salvar palpite</button>`}
       </div>
     `;
   }).join("");
@@ -310,7 +331,7 @@ function definirNome() {
   if (!nome) return mostrarToast("Digite seu nome!");
   setUser(nome);
   document.getElementById("nome-section").style.display = "none";
-  document.getElementById("palpites-container").style.display = "grid";
+  document.getElementById("palpites-container").style.display = "flex";
   renderPalpites();
 }
 
